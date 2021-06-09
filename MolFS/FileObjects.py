@@ -101,15 +101,25 @@ class folder:
         #Add binary content to the blocks
         print("Adding file...")
         content = file.getBinary()
-        block = blocks(self)
         
-        if len(self.blocks) == 0:   # Start a new block
+        if len(self.blocks) == 0:
+            block = blocks(self)
             block.pool = 1
             block.block = 0
         else:
-            lblock = self.blocks[-1]    # Start from the last one
-            block.pool = lblock.pool
-            block.block = lblock.block + 1
+            lblock = self.blocks[-1]
+            if lblock.used == blockSize:
+                block = blocks(self)
+                block.pool = lblock.pool
+                block.block = lblock.block + 1
+            else:
+                block = lblock
+
+        
+        ## Remaining: Take the rest of the last block
+        rem = blockSize - block.used
+        
+        block.addToBlock( content[0:rem] )
         
         ### Divide the content in the amount of blocks
         numblocks = math.ceil(len(content)/blockSize)
@@ -133,18 +143,22 @@ class folder:
             
             block.content = extn
             
-            
+           
             
             self.blocks.append(block)
-            
-            block.write()
 
             file.add_extents(block)  # examine the extents in the file
             self.blocks.append(block)  #add the used block
             
+            if k < numblocks-1:
+                block.writeclose()            
+            
+            
             pool = block.pool
             n = block.block + 1
             
+
+
             
             block = blocks(self)  # Create a new object
             
@@ -169,6 +183,8 @@ class folder:
                 self.addNewBlocks(k)
             
        
+        if len(self.blocks) > 0:
+            self.blocks[-1].writeclose()
         
     
     
@@ -295,16 +311,45 @@ class blocks:
         
         self.used = 0  # May be used in the future
         
+        self.closed = False
+    
+    def addToBlock(self, cont):
+        if self.content == None:
+            self.content = cont
+        else:
+            self.content += cont
+    
     def write(self):
         # Check block name
+        self.used = len(self.content)
+        
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
         binaryWriteHex(self.content,self.FS.PoolsPath+self.file)
         
-        self.used = len(self.content)
         
-        self.content = [] # delete content to save memory
         
+        
+    def writeclose (self):
+        # Close the DataBlock
+        
+        if self.closed == False:
+        
+            self.used = len(self.content)
+            #diff = blockSize - self.used
+            #print(diff)
+            
+            if self.used < blockSize:
+                self.content += bytes(blockSize-self.used)
+                #for k in range(blockSize-self.used):
+                #    self.content.extent(0)
+            
+            self.used = blockSize
+            self.write()
+            
+            self.content = [] # delete content to save memory        
+            
+            self.closed = True  # do not close twice
         
         
     

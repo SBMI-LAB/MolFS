@@ -1,0 +1,68 @@
+This file covers the stages of the project
+and the tasks to acomplish
+
+Tasks resume
+
+[ ] Generate DataBlocks
+[X] Generate Simple DataBlocks
+[ ] Simple Datablocks from partial values
+[X] Add files to the File System
+[X] Close DataBlock 
+[X] Obtain binary values from the extents
+[ ] Create copy of the old extents
+[ ] Search the location of the extents in the File byte array
+[ ] Add the new extents to the list of extents (in order)
+[ ] Create new extents from the fraction of existing extents that sill valid
+
+------------------------------------------------
+
+
+History
+------------------------------------------------
+
+June 9th
+
+
+How to generate DataBlocks?
+
+Requirements:
+Knowledge of existing Datablocks - through extents
+
+What do we have?
+[X] Add files to the File System
+
+
+Check if the files have extents
+
+If not, all the file must be added
+
+Keep the DataBlock open while new data is added
+[ ] Simple Datablocks from partial values
+Add values to open datablocks
+
+[X] Close DataBlock 
+when finish all the session
+* Close DataBlock will full the block of zeroes until
+the end of the block. 
+
+
+[ ] Obtain binary values from the extents
+at any cost!
+
+
+[ ] Create copy of the old extents
+
+[ ] Search the location of the extents in the File byte array
+
+[ ] Add the new extents to the list of extents (in order)
+
+[ ] Create new extents from the fraction of existing extents that sill valid
+
+
+Simple DataBlocks:
+
+Are "dumb" datablocks, small partitions of 
+the files associated to the files.
+The work as initial approach (when no datablocks)
+were generated.
+

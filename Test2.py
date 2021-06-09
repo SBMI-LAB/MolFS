@@ -32,6 +32,6 @@ fs.add('/home/acroper/toma1.jpeg')
 
 fs.Root.recursivePrint()
 
-fs.Save()
+#fs.Save()
 
 fs.WriteBlocks()
