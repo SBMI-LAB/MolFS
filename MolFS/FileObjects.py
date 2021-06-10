@@ -121,8 +121,9 @@ class folder:
         
         block.addToBlock( content[0:rem] )
         
+        
         ### Divide the content in the amount of blocks
-        numblocks = math.ceil(len(content)/blockSize)
+        numblocks = math.ceil((len(content)-rem)/blockSize)
         
         k = 0
         
@@ -133,8 +134,8 @@ class folder:
                 block.block = 0
             
             # Extract the binary content
-            initp = k*blockSize
-            endp = (k+1)*blockSize
+            initp = k*blockSize + rem
+            endp = (k+1)*blockSize + rem
             
             if endp > len(content):
                 endp = len(content)
@@ -168,6 +169,8 @@ class folder:
             
             
             k += 1
+            
+            #print( numblocks,  k , "- block ", n, " pool ", pool)
             
         print("Writen ", k , " blocks" )
         
@@ -318,6 +321,8 @@ class blocks:
             self.content = cont
         else:
             self.content += cont
+        
+        self.used = len(self.content)
     
     def write(self):
         # Check block name

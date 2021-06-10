@@ -1,0 +1,11 @@
+
+*.ini
+*.pyc
+MolFSGen_old.py
+Test/Destiny/document.docx
+Test/Destiny/document.docx.txt
+Test/Destiny/text.txt
+Test/Destiny/text.txt.txt
+Test/Source/document.docx
+Test/Source/image.jpeg
+Test/Source/text.txt
