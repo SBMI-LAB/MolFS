@@ -9,16 +9,16 @@ PathOut = "Test/Destiny/"
 
 #filein = "image.jpeg"
 #filein = "text.txt"
-filein = "document.docx"
+filein = "Text2.txt"
 
 
 ## Creating Hex file
-#content = binaryRead( PathIn+filein )
-#binaryWriteHex(content, PathOut + filein + ".txt")
+content = binaryRead( PathIn+filein )
+binaryWriteHex(content, PathOut + filein + ".txt")
 
 
 ## Reading Hex file
-content2 = HexRead(PathOut + filein + ".txt")
-binaryWrite(content2, PathOut + filein)
+#content2 = HexRead(PathOut + filein + ".txt")
+#binaryWrite(content2, PathOut + filein)
 
 

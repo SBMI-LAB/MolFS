@@ -5,7 +5,7 @@ Tasks resume
 
 [ ] Generate DataBlocks
 [X] Generate Simple DataBlocks
-[ ] Simple Datablocks from partial values
+[X] Simple Datablocks from partial values
 [X] Add files to the File System
 [X] Close DataBlock 
 [X] Obtain binary values from the extents
@@ -14,6 +14,7 @@ Tasks resume
 [ ] Add the new extents to the list of extents (in order)
 [ ] Create new extents from the fraction of existing extents that sill valid
 
+[ ] Rebuild file from DataBlocks
 ------------------------------------------------
 
 
@@ -37,7 +38,7 @@ Check if the files have extents
 If not, all the file must be added
 
 Keep the DataBlock open while new data is added
-[ ] Simple Datablocks from partial values
+[X] Simple Datablocks from partial values
 Add values to open datablocks
 
 [X] Close DataBlock 

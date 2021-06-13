@@ -14,21 +14,24 @@ fs.mkdir('Other')
 
 fs.cd('Jorge')
 
-fs.mkdir('Inner_Jorge')
+#fs.mkdir('Inner_Jorge')
+#
+#fs.cd('..')
+#
+#fs.cd('Test')
+#
+#fs.mkdir('Test_folder')
+#
+#fs.cd("..")
+#
+#fs.cd("Jorge")
+#
+#fs.cd('Inner_Jorge')
 
-fs.cd('..')
+#fs.add('/home/acroper/toma1.jpeg')
 
-fs.cd('Test')
-
-fs.mkdir('Test_folder')
-
-fs.cd("..")
-
-fs.cd("Jorge")
-
-fs.cd('Inner_Jorge')
-
-fs.add('/home/acroper/toma1.jpeg')
+fs.add('/home/acroper/Text1.txt')
+fs.add('/home/acroper/Text2.txt')
 
 fs.Root.recursivePrint()
 

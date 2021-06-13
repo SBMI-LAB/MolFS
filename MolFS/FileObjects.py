@@ -8,7 +8,7 @@ import math
 from MolFS.Binary import *
 
 blockSize = 4096 # bytes
-blocksPerPool = 100
+blocksPerPool = 20
 
 class folder:
     # object structure to define folders
@@ -102,6 +102,8 @@ class folder:
         print("Adding file...")
         content = file.getBinary()
         
+        blockNew = True
+        
         if len(self.blocks) == 0:
             block = blocks(self)
             block.pool = 1
@@ -114,42 +116,57 @@ class folder:
                 block.block = lblock.block + 1
             else:
                 block = lblock
+                blockNew = False
 
         
         ## Remaining: Take the rest of the last block
         rem = blockSize - block.used
-        
-        block.addToBlock( content[0:rem] )
-        
+        prem = block.used
+        #rem = block.used
         
         ### Divide the content in the amount of blocks
-        numblocks = math.ceil((len(content)-rem)/blockSize)
+        numblocks = math.ceil((len(content)-prem)/blockSize)
+        
+        if prem > 0:  
+            block.addToBlock( content[0:rem] )
+            npol = block.pool
+            
+            if block.used == blockSize:
+                block = blocks(self)
+                block.pool = npol
+            else:
+                numblocks = 0
+            
+        
+        
+        
+        print("numblocks: ", numblocks)
         
         k = 0
         
         while k < numblocks:
             
-            if block.block > blocksPerPool :
+            if block.block > blocksPerPool and blockNew :
                 block.pool += 1
                 block.block = 0
             
             # Extract the binary content
-            initp = k*blockSize + rem
-            endp = (k+1)*blockSize + rem
+            initp = k*blockSize + prem
+            endp = (k+1)*blockSize + prem
             
             if endp > len(content):
                 endp = len(content)
             
             extn = content[initp:endp]            
             
-            block.content = extn
-            
+            #block.content = extn
+            block.addToBlock(extn)
            
             
             self.blocks.append(block)
 
             file.add_extents(block)  # examine the extents in the file
-            self.blocks.append(block)  #add the used block
+            #self.blocks.append(block)  #add the used block
             
             if k < numblocks-1:
                 block.writeclose()            
@@ -352,7 +369,7 @@ class blocks:
             self.used = blockSize
             self.write()
             
-            self.content = [] # delete content to save memory        
+            #self.content = [] # delete content to save memory        
             
             self.closed = True  # do not close twice
         
