@@ -8,6 +8,11 @@ from MolFS.Binary import *
 from MolFS.IndexFile import *
 from MolFS.FileObjects import *
 
+from MolFS.MolDevice import *
+
+
+
+
 class MolFS:
     
     
@@ -51,6 +56,10 @@ class MolFS:
 #        else:
         self.CreateFS()
         
+        self.mDevice = MolDevice("seqnam")
+        
+        self.Root.mDevice = self.mDevice
+        
         
 
     def CreateFS(self):
@@ -63,6 +72,7 @@ class MolFS:
         # Path for the Pools - binary
         self.PoolsPath = self.FSPath + "Pools/"
         
+        
         # Path for the binary input files
         self.SourcePath = self.FSPath + "Source/"
         
@@ -71,10 +81,16 @@ class MolFS:
         
         self.Root.PoolsPath = self.PoolsPath
         
+        self.InterfaceOut = self.FSPath + "Interface/Out"
+        self.InterfaceIn = self.FSPath + "Interface/In"
+        
         os.makedirs(self.FSPath, exist_ok = True)
         os.makedirs(self.PoolsPath, exist_ok = True)
         os.makedirs(self.SourcePath, exist_ok = True)
         os.makedirs(self.OutputPath, exist_ok = True)
+        
+        os.makedirs(self.InterfaceOut, exist_ok = True)
+        os.makedirs(self.InterfaceIn, exist_ok = True)
         
         
         dprint("System created")
@@ -188,6 +204,10 @@ class MolFS:
             
             
             
+    def readAll(self):
+        # Read all files of the filesystem
+        # and write them to the output folder
+        self.Root.readAllFiles(self.OutputPath)
                 
             
             

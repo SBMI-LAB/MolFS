@@ -1,0 +1,16 @@
+0 : AAC, GAC
+1 : AAG, GAG
+2 : AGG, GTC, TCT
+3 : TCG, CGA
+4 : ACT, GCT, TCC
+5 : ACC, GCC, CGT
+6 : ACG, GCG
+7 : AGA, GGA
+8 : AGT, GGT
+9 : AGC, GGC, CCG
+a : GAA, CGG
+b : TAA, CAA
+c : TAC, CCT, ATC
+d : TAG, CGC
+e : TTA, CTA, GTT
+f : TTC, CTC, GTA

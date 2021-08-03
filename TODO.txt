@@ -15,11 +15,89 @@ Tasks resume
 [ ] Create new extents from the fraction of existing extents that sill valid
 
 [ ] Rebuild file from DataBlocks
+[ ] Carry with Modification datetime
+
+
+[X] Create interface for seqNAM
+[ ] Record DataBlocks on seqNAM
+[ ] Read DataBlocks from seqNAM
+
+[ ] Include init and ending strings for seqNAM
+
+[ ] Create Sessions
+[ ] Open session
+[ ] Close session
+
 ------------------------------------------------
 
 
 History
 ------------------------------------------------
+
+July 30
+[ ] Include init and ending strings for seqNAM
+This feature is important to mark on the DataBlocks
+SeqNAM algorithm fails while using blank data (high zeroes)
+So that it requires a non sparse document.
+However, SeqNAM requires a precise knowledge of the
+amount of segments generated, which is not something 
+we can check beforehand.
+
+Two possible workarounds (can be combined):
+1. Store (probably in the Index file) information regarding
+to the amount of segments represented in each seqNAM datablock file
+
+2. Include header and endings strings in each Datablock file
+so that we can check when the decoded file is generated, and verify their
+existence, so that, in case of not decoding with the predefined value, 
+the algorithm could check different segment values and try again
+until the desired block is generated.
+
+
+
+July 29
+[X] Create interface for seqNAM
+
+The code of seqNAM is in process to being integrated
+into MolFS.
+The files encode.py and decode.py where replaced for
+encodeModule.py and decodeModule.py, respectively.
+They were modified so that they are not using the 
+main() function (which could lead to issues)
+
+Interface class was created: seqnam
+
+Molecular Device class was created: MolDevice
+
+MolDevice calls the interfaces: seqnam or dmos,
+and transparently will call the encoding and decoding
+functions.
+
+July 23
+Notes for Modification datetime
+
+To obtain modification datetime
+import pathlib
+fname = pathlib.Path('test.py')
+fname.stat().st_mtime
+
+To set a modification datetime
+date = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute, second=second)
+modTime = time.mktime(date.timetuple())
+
+os.utime(fileLocation, (modTime, modTime))
+
+June 13
+
+Attempt to accomplish:
+[ ] Rebuild file from DataBlocks
+
+June 12
+[X] Simple Datablocks from partial values
+Solved
+There were some few bugs related to the generation
+of Datablock for the second file.
+Pointer and duplication of vector was fixed.
 
 June 9th
 

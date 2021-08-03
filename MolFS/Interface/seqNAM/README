@@ -1,0 +1,52 @@
+
+
+===================================================
+===================================================
+
+Visit https://trac.boisestate.edu/EDDY/home/ for more information.
+
+License: GPLv3 (or later)
+
+===================================================
+===================================================
+
+INSTALL
+
+This program is written in Python 2.
+The following python libraries are needed:
+
+1. Numpy
+2. Cython
+3. reedsolo (https://pypi.python.org/pypi/reedsolo)
+4. tqdm
+5. logging
+6. scipy
+7. md5
+
+Build the code with Cython by running the following command:
+   python setup.py build_ext --inplace
+
+===================================================
+===================================================
+
+RUNNING
+
+Run the program with the -h or --help flag for parameter information and usage:
+   python encode.pyx -h
+
+   python decode.pyx -h
+
+
+Run an encoding and decoding test with suggested parameters:
+   python encode.pyx -f test_file -l 32 --delta 0.001 --c_dist 0.025 --rs 2 
+                     --map original_map.txt --alpha 0.1 --out test_file.dna
+
+   python decode.pyx -f test_file.dna -n 32768 -l 32 --delta 0.001 --c_dist 0.025 
+                     --rs 2 --map original_map.txt --out test_file.dna.out
+
+
+Note: Parameters used for decoding should be the same as the ones used for encoding.
+
+===================================================
+===================================================
+

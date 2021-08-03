@@ -8,7 +8,10 @@ import math
 from MolFS.Binary import *
 
 blockSize = 4096 # bytes
-blocksPerPool = 20
+blocksPerPool = 1000
+
+fillBlocks = False
+
 
 class folder:
     # object structure to define folders
@@ -32,6 +35,8 @@ class folder:
         
         self.Index = None
         
+        self.mDevice = None
+        
     
     def addFile(self, file):
         self.files.append(file)
@@ -54,7 +59,7 @@ class folder:
         self.folders.append(folder) 
         folder.parent = self
         folder.Index = self.Index
-        
+        folder.mDevice = self.mDevice
 
     def getParent(self):
         if self.parent == None:
@@ -83,6 +88,8 @@ class folder:
         
         self.addFolder(nfolder)
         
+        
+        
         return nfolder
     
     def recursivePrint(self, path = ""):
@@ -95,6 +102,23 @@ class folder:
         
         for k in self.folders:
             k.recursivePrint(npath)
+            
+    
+    def readAllFiles(self, path = ""):
+        # Read files recursively
+        if self.Name != "":
+            npath = path + self.Name + "/"
+        else:
+            npath = path
+        
+        os.makedirs(npath, exist_ok = True)
+        #print(npath)
+        
+        for k in self.files:
+            k.readFile(npath)
+            
+        for k in self.folders:
+            k.readAllFiles(npath)
             
     
     def addNewBlocks(self, file):
@@ -127,22 +151,31 @@ class folder:
         ### Divide the content in the amount of blocks
         numblocks = math.ceil((len(content)-prem)/blockSize)
         
+        k = 0
+        
         if prem > 0:  
             block.addToBlock( content[0:rem] )
             npol = block.pool
             
             if block.used == blockSize:
-                block = blocks(self)
+                block.writeclose()
+                file.add_extents(block, prem)  #the file should report the extent
+                block = blocks(self) #new block
                 block.pool = npol
+                block.block = lblock.block + 1
+                blockNew = True
+                #prem = rem
+                k=1
             else:
                 numblocks = 0
+                file.add_extents(block, prem)  #the file should report the extent
             
         
         
         
         print("numblocks: ", numblocks)
         
-        k = 0
+        
         
         while k < numblocks:
             
@@ -245,29 +278,35 @@ class files:
         return content
         #binaryWriteHex(content, path + Name + ".txt")
         
-    def add_extents(self, block):
+    def add_extents(self, block, offset = 0):
         # This should check the extension of the block
         if len(self.extents) == 0:
             ext1 = extent()
             ext1.block_in = block.block
-            ext1.offset_in = 0 # by now
+            ext1.offset_in = offset # by now
             ext1.pool_in = block.pool
-            ext1.size = block.used
+            ext1.size = block.used ## ??
             
             ext1.block_out = block.block
             ext1.finaloffset = block.used
+            
+            ext1.addBlocks(block)
             
             self.extents.append(ext1)
             
         else:
             # previous
-            pext = self.extents[-1]
+            pext: extent = self.extents[-1]
             
+            ## if the block is the same than the previous one, that means
+            ## if it is continous!
             if block.block == (pext.block_out + 1) and block.pool == pext.pool and pext.finaloffset == blockSize:
                 ## No new extent is required, it just add new data
                 pext.block_out = block.block
                 pext.finaloffset = block.used
                 pext.size += block.used
+                pext.addBlocks(block)
+               
             else:
                 ext1 = extent()
                 ext1.block_in = block.block
@@ -278,14 +317,27 @@ class files:
                 ext1.block_out = block.block
                 ext1.finaloffset = block.used
                 
+                ext1.addBlocks(block)
                 self.extents.append(ext1)
+                
+                
+    def readFile(self, path):
+        npath = path + self.Name
+        print(npath)
+        
+        Added = False
+        #content = []
+        
+        for ext in self.extents:
+            if Added == False:
+                content = ext.getData()
+            else:
+                content += ext.getData()
+            Added = True
+        
+        if Added == True:
+            binaryWrite(content, npath)    
             
-            
-            
-            
-            
-       
-    
     
             
     
@@ -317,6 +369,46 @@ class extent:
         
         self.block_out = 0
         self.finaloffset = 0
+        
+        self.blocks = []
+    
+    def addBlocks(self, block):
+        self.blocks.append(block)
+    
+    def getData(self):
+        # Get the data from the blocks
+        ## Need access to the blocks
+        
+        # Pointer in 
+        p_in = self.offset_in
+        
+        #p_outF = p_in + self.size
+        p_outF = self.size
+        
+        p_out = p_outF
+        
+        for k in range( len(self.blocks) ):
+            
+            if p_outF > blockSize:
+                p_out = blockSize
+                p_outF -= blockSize
+            else:
+                p_out = p_outF
+            
+            
+            if k== 0:
+                content = self.blocks[k].getContent()[p_in:p_out]
+                p_in = 0
+            else:                
+                content += self.blocks[k].getContent()[p_in:p_out]
+            
+        
+        
+            
+        
+        return content
+        
+        
 
 class blocks:
     def __init__(self, FS):
@@ -332,6 +424,13 @@ class blocks:
         self.used = 0  # May be used in the future
         
         self.closed = False
+        
+        self.mDevice = FS.mDevice
+        
+        self.initFlag = str.encode("--Init--MolFS--")
+        
+        self.endFlag = str.encode("--MolFS--EOF--")
+        
     
     def addToBlock(self, cont):
         if self.content == None:
@@ -345,10 +444,16 @@ class blocks:
         # Check block name
         self.used = len(self.content)
         
+        ### Add a signature to the content
+        #content2 = self.initFlag + self.content + self.endFlag
+        content2 = self.content
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
-        binaryWriteHex(self.content,self.FS.PoolsPath+self.file)
+        binaryWriteHex(content2,self.FS.PoolsPath+self.file)
         
+        
+        binaryWrite(content2, self.FS.PoolsPath+self.file + ".bin")
+        #self.mDevice.encode(self.FS.PoolsPath+self.file + ".bin", self.FS.PoolsPath+self.file + ".dna")
         
         
         
@@ -361,10 +466,10 @@ class blocks:
             #diff = blockSize - self.used
             #print(diff)
             
-            if self.used < blockSize:
+            if self.used < blockSize and fillBlocks :
                 self.content += bytes(blockSize-self.used)
-                #for k in range(blockSize-self.used):
-                #    self.content.extent(0)
+                for k in range(blockSize-self.used):
+                    self.content.extent(0)
             
             self.used = blockSize
             self.write()
@@ -374,5 +479,20 @@ class blocks:
             self.closed = True  # do not close twice
         
         
-    
+    def getContent(self):
+        ## Read binary file
+        self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
+        filename = self.FS.PoolsPath+self.file
+        
+        if os.path.exists(self.FS.PoolsPath+self.file):
+            self.content = HexRead(filename)
+            
+#            sif = self.content.find(self.initFlag)
+#            sef = self.content.find(self.endFlag)
+#            if sif != -1:
+#                self.content = self.content[sif + len(self.initFlag) :]
+#            if sef != -1:
+#                self.content = self.content[:sef]
+        
+        return self.content
     
