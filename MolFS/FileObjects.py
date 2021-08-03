@@ -164,7 +164,8 @@ class folder:
                 block.pool = npol
                 block.block = lblock.block + 1
                 blockNew = True
-                #prem = rem
+                
+                #prem = -prem
                 k=1
             else:
                 numblocks = 0
@@ -184,8 +185,8 @@ class folder:
                 block.block = 0
             
             # Extract the binary content
-            initp = k*blockSize + prem
-            endp = (k+1)*blockSize + prem
+            initp = k*blockSize - prem
+            endp = (k+1)*blockSize - prem
             
             if endp > len(content):
                 endp = len(content)

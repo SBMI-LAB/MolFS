@@ -34,9 +34,11 @@ fs.cd('Jorge')
 
 
 
-fs.add('/home/acroper/toma1.jpeg')
-fs.add('/home/acroper/testfile.jpg')
+
+
 fs.add('/home/acroper/Text1.txt')
+fs.add('/home/acroper/testfile.jpg')
+fs.add('/home/acroper/toma1.jpeg')
 fs.add('/home/acroper/Text2.txt')
 
 
