@@ -446,15 +446,14 @@ class blocks:
         self.used = len(self.content)
         
         ### Add a signature to the content
-        #content2 = self.initFlag + self.content + self.endFlag
-        content2 = self.content
+        content2 = self.initFlag + self.content + self.endFlag
+        #content2 = self.content
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
-        binaryWriteHex(content2,self.FS.PoolsPath+self.file)
-        
-        
+        #binaryWriteHex(content2,self.FS.PoolsPath+self.file)
         binaryWrite(content2, self.FS.PoolsPath+self.file + ".bin")
-        #self.mDevice.encode(self.FS.PoolsPath+self.file + ".bin", self.FS.PoolsPath+self.file + ".dna")
+        
+        self.mDevice.encode(self.FS.PoolsPath+self.file + ".bin", self.FS.PoolsPath+self.file + ".dna")
         
         
         
@@ -485,15 +484,18 @@ class blocks:
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         filename = self.FS.PoolsPath+self.file
         
-        if os.path.exists(self.FS.PoolsPath+self.file):
-            self.content = HexRead(filename)
+        if os.path.exists(self.FS.PoolsPath+self.file+".bin"):
+            #self.content = HexRead(filename)
             
-#            sif = self.content.find(self.initFlag)
-#            sef = self.content.find(self.endFlag)
-#            if sif != -1:
-#                self.content = self.content[sif + len(self.initFlag) :]
-#            if sef != -1:
-#                self.content = self.content[:sef]
+            self.mDevice.decode(filename+".dna", filename+".dec.bin")
+            self.content = binaryRead(filename+".dec.bin")
+            
+            sif = self.content.find(self.initFlag)
+            sef = self.content.find(self.endFlag)
+            if sif != -1:
+                self.content = self.content[sif + len(self.initFlag) :]
+            if sef != -1:
+                self.content = self.content[:sef]
         
         return self.content
     
