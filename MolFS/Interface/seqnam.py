@@ -147,6 +147,7 @@ class MolFSDev: ### class seqnam
         
         if valid == False:
             print("Error decoding file ", in_file)
+            raise Exception ("File not decoded")
                 
         
     

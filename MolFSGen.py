@@ -38,6 +38,10 @@ class MolFS:
         
         self.indexFile = IndexFile(Name)
         
+        self.indexFile.IndexPool.Index = IndexFile("Temp")
+        
+        self.indexFile.FSPath = self.FSPath
+        
         self.Root = self.indexFile.Root  ## Root folder
         
         self.CF = self.Root # Current folder
@@ -59,6 +63,7 @@ class MolFS:
         self.mDevice = MolDevice("seqnam")
         
         self.Root.mDevice = self.mDevice
+        self.indexFile.IndexPool.mDevice = self.mDevice
         
         
 
@@ -80,6 +85,7 @@ class MolFS:
         self.OutputPath = self.FSPath + "Output/"
         
         self.Root.PoolsPath = self.PoolsPath
+        self.indexFile.IndexPool.PoolsPath = self.PoolsPath
         
         self.InterfaceOut = self.FSPath + "Interface/Out"
         self.InterfaceIn = self.FSPath + "Interface/In"
@@ -116,6 +122,8 @@ class MolFS:
     def WriteBlocks (self):
         # Create DataBlocks
         self.Root.genBlocks()
+        
+        self.indexFile.genIndexFile()
         
     
     def Sync (self):

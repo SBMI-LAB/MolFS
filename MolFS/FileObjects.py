@@ -37,9 +37,12 @@ class folder:
         
         self.mDevice = None
         
+        self.initPool = 1
+        
     
     def addFile(self, file):
         self.files.append(file)
+        
         self.Index.addFiles(file)
 
     def addNewFile (self, filename, localpath):
@@ -130,7 +133,7 @@ class folder:
         
         if len(self.blocks) == 0:
             block = blocks(self)
-            block.pool = 1
+            block.pool = self.initPool #1
             block.block = 0
         else:
             lblock = self.blocks[-1]
@@ -372,9 +375,12 @@ class extent:
         self.finaloffset = 0
         
         self.blocks = []
+        
+        self.numblocks = 0
     
     def addBlocks(self, block):
         self.blocks.append(block)
+        self.numblocks += 1
     
     def getData(self):
         # Get the data from the blocks
@@ -450,7 +456,7 @@ class blocks:
         #content2 = self.content
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
-        #binaryWriteHex(content2,self.FS.PoolsPath+self.file)
+        binaryWriteHex(content2,self.FS.PoolsPath+self.file)
         binaryWrite(content2, self.FS.PoolsPath+self.file + ".bin")
         
         self.mDevice.encode(self.FS.PoolsPath+self.file + ".bin", self.FS.PoolsPath+self.file + ".dna")
