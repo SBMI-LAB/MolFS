@@ -175,13 +175,16 @@ class folder:
                 file.add_extents(block, prem)  #the file should report the extent
             
         
-        
+        tfile = file.Name
+        tblocks = block.block
         
         print("numblocks: ", numblocks)
         
         
         
-        while k < numblocks:
+        while k <= numblocks:
+            
+            tblocks = block.block
             
             if block.block > blocksPerPool and blockNew :
                 block.pool += 1
@@ -205,8 +208,11 @@ class folder:
             file.add_extents(block)  # examine the extents in the file
             #self.blocks.append(block)  #add the used block
             
-            if k < numblocks-1:
-                block.writeclose()            
+            #if k < numblocks-1:
+            if len(extn) > 0:
+                block.writeclose()    
+            #elif endp < len(content): 
+            #    k = k - 1
             
             
             pool = block.pool
@@ -223,6 +229,9 @@ class folder:
             
             
             k += 1
+            
+            #if endp >= len(content):
+            #    break
             
             #print( numblocks,  k , "- block ", n, " pool ", pool)
             
@@ -394,6 +403,8 @@ class extent:
         
         p_out = p_outF
         
+        
+        
         for k in range( len(self.blocks) ):
             
             if p_outF > blockSize:
@@ -402,6 +413,9 @@ class extent:
             else:
                 p_out = p_outF
             
+            
+            if len(self.blocks[k].getContent()[p_in:p_out]) == 0:
+                print("Error here")
             
             if k== 0:
                 content = self.blocks[k].getContent()[p_in:p_out]
@@ -447,8 +461,15 @@ class blocks:
         
         self.used = len(self.content)
     
+    def checkFolder (self):
+        ## Checks if Pools folder is present
+        self.PoolFolder = self.FS.PoolsPath + str(self.pool) + "/"
+        os.makedirs(self.PoolFolder, exist_ok = True)
+    
     def write(self):
         # Check block name
+        self.checkFolder()
+        
         self.used = len(self.content)
         
         ### Add a signature to the content
@@ -456,10 +477,11 @@ class blocks:
         #content2 = self.content
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
-        binaryWriteHex(content2,self.FS.PoolsPath+self.file)
-        binaryWrite(content2, self.FS.PoolsPath+self.file + ".bin")
+        binaryWriteHex(content2,self.PoolFolder +self.file)
         
-        self.mDevice.encode(self.FS.PoolsPath+self.file + ".bin", self.FS.PoolsPath+self.file + ".dna")
+        binaryWrite(content2, self.PoolFolder +self.file + ".bin")
+        
+        self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
         
         
         
@@ -487,10 +509,16 @@ class blocks:
         
     def getContent(self):
         ## Read binary file
-        self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
-        filename = self.FS.PoolsPath+self.file
+        self.content = []
         
-        if os.path.exists(self.FS.PoolsPath+self.file+".bin"):
+        self.checkFolder()
+        
+        self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
+        #filename = self.FS.PoolsPath+self.file
+        filename = self.PoolFolder+self.file
+        
+        #if os.path.exists(self.PoolFolder+self.file+".bin"):
+        if os.path.exists(filename+".dna"):
             #self.content = HexRead(filename)
             
             self.mDevice.decode(filename+".dna", filename+".dec.bin")

@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+Test for create a file structure 
+by importing files
+"""
+
 
 from MolFSGen import *
 #from MolFS.Interface.seqNAM import *
@@ -35,11 +40,12 @@ fs.cd('Jorge')
 
 
 
-fs.add('/home/acroper/toma1.jpeg')
-fs.add('/home/acroper/testfile.jpg')
+#fs.add('/home/acroper/toma1.jpeg')
 fs.add('/home/acroper/Text1.txt')
 fs.add('/home/acroper/Text2.txt')
 
+fs.add('/home/acroper/testfile.jpg')
+fs.add('/home/acroper/toma1.jpeg')
 
 
 
