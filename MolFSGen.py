@@ -4,6 +4,8 @@ import shutil
 
 import pickle
 
+import time
+
 from MolFS.Binary import *
 from MolFS.IndexFile import *
 from MolFS.FileObjects import *
@@ -25,7 +27,9 @@ class MolFS:
     
     MolPath = "/tmp/MolFS/"
     
-    
+
+        
+        
     
     def StartFS(self, Name):
         # Open or create a new FileSystem with the given name
@@ -45,6 +49,9 @@ class MolFS:
         self.Root = self.indexFile.Root  ## Root folder
         
         self.CF = self.Root # Current folder
+        
+        self.EncodeTime = -1
+        self.DecodeTime = -1
         
         self.pathtree = []
         # Check existence
@@ -120,10 +127,17 @@ class MolFS:
             pickle.dump(self, filehandle)
         
     def WriteBlocks (self):
+        
+        t = time.time()
         # Create DataBlocks
         self.Root.genBlocks()
         
         self.indexFile.genIndexFile()
+        
+        toc = time.time()
+        
+        self.EncodeTime = toc-t
+        
         
     
     def Sync (self):
@@ -210,13 +224,100 @@ class MolFS:
         else:
             print(filename, ": File doesn't exist")
             
+    
+    def addFolder(self, folder, restore = True):
+        
+        
+        
+        
+        if restore:
+            ubication = self.CF
+        
+        
+        
+        
+        if os.path.isdir(folder):
             
+            if folder[-1] != "/":
+                folder += "/"
+            
+            foldername = os.path.basename(os.path.dirname(folder))
+            
+            self.mkdir(foldername)
+            
+            self.cd(foldername)
+            
+            for fold in os.listdir(folder):
+                d = os.path.join(folder, fold)
+                
+                if os.path.isdir(d):
+                    self.addFolder(d, False)
+                else:
+                    self.add(d)
+                
+            self.cd("..")
+            
+            
+        if restore:
+            self.CF = ubication
+            
+        
             
     def readAll(self):
         # Read all files of the filesystem
         # and write them to the output folder
+        t = time.time()
+        
         self.Root.readAllFiles(self.OutputPath)
+        
+        toc = time.time()
+        
+        self.DecodeTime = toc - t
                 
+            
+
+    def countStrands(self):
+        strands = 0
+        
+        size = 0
+        
+        for block in self.Root.blocks:
+            lineas, lsize = block.countStrands()
+            if lineas > 0:
+                strands += lineas - 1
+            
+            size += lsize
+                
+        return strands, size
+    
+    
+    def Stats(self):
+        
+        et = int(self.EncodeTime*100)/100
+        dt = int(self.DecodeTime*100)/100
+        
+        blocks = len(self.Root.blocks)
+        pools = self.Root.Pools
+        
+        
+        print("------------------------------- ")
+        print("\nMolecular File System - MOLFS\n")
+        
+        if et != -1:
+            print("Encoding time:", et, "secods")
+        if dt != -1:
+            print("Decoding time:", dt, "secods")
+            
+        if et != -1:
+            print("Blocks generated:" , blocks)
+            print("Pools generated:" , pools)
+            
+            strands, size = self.countStrands()
+            
+            print("DNA strands:", strands)
+            print("Binary use:", size, " bytes")
+            
+            
             
             
             

@@ -5,10 +5,12 @@ import pathlib
 import datetime
 import math
 
+from multiprocessing import Process
+
 from MolFS.Binary import *
 
 blockSize = 4096 # bytes
-blocksPerPool = 1000
+blocksPerPool = 50
 
 fillBlocks = False
 
@@ -38,6 +40,8 @@ class folder:
         self.mDevice = None
         
         self.initPool = 1
+        
+        self.Pools = 0
         
     
     def addFile(self, file):
@@ -180,9 +184,12 @@ class folder:
         
         print("numblocks: ", numblocks)
         
+        Reading = True
+        if k >= numblocks:
+            Reading = False
         
-        
-        while k <= numblocks:
+        #while k < numblocks:
+        while Reading:
             
             tblocks = block.block
             
@@ -194,8 +201,9 @@ class folder:
             initp = k*blockSize - prem
             endp = (k+1)*blockSize - prem
             
-            if endp > len(content):
+            if endp >= len(content):
                 endp = len(content)
+                Reading = False ## Finished!!!
             
             extn = content[initp:endp]            
             
@@ -208,11 +216,16 @@ class folder:
             file.add_extents(block)  # examine the extents in the file
             #self.blocks.append(block)  #add the used block
             
-            #if k < numblocks-1:
-            if len(extn) > 0:
-                block.writeclose()    
+            #if k < numblocks:            
+            #if len(extn) > 0:
+                #block.writeclose()    
+            block.write()
             #elif endp < len(content): 
             #    k = k - 1
+            #if k == numblocks and endp < len(content):
+            #    numblocks += 1
+                
+            
             
             
             pool = block.pool
@@ -250,7 +263,13 @@ class folder:
             
        
         if len(self.blocks) > 0:
-            self.blocks[-1].writeclose()
+            #self.blocks[-1].writeclose()
+            self.blocks[-1].write()
+            self.Pools = self.blocks[-1].pool
+            
+        for block in self.blocks:
+            if block.used > 0:
+                block.encode()
         
     
     
@@ -472,8 +491,10 @@ class blocks:
         
         self.used = len(self.content)
         
+        sizeflag = str.encode( "["+str(self.used).zfill(7) +"]"  )
+        
         ### Add a signature to the content
-        content2 = self.initFlag + self.content + self.endFlag
+        content2 = self.initFlag + self.content +sizeflag+ self.endFlag
         #content2 = self.content
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
@@ -481,9 +502,10 @@ class blocks:
         
         binaryWrite(content2, self.PoolFolder +self.file + ".bin")
         
+        #self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
+        
+    def encode(self):
         self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
-        
-        
         
     def writeclose (self):
         # Close the DataBlock
@@ -532,4 +554,23 @@ class blocks:
                 self.content = self.content[:sef]
         
         return self.content
+    
+    
+    def countStrands(self):
+        """
+        Statistical function to count the amount of strands in the output files
+        """
+        self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
+        filename = self.PoolFolder+self.file + ".dna"
+        
+        lines = 0
+        
+        size = self.used
+        
+        if os.path.exists(filename): 
+            with open(filename) as foo:
+                lines = len(foo.readlines())
+                foo.close()
+        
+        return lines, size       
     

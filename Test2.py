@@ -10,62 +10,61 @@ from MolFSGen import *
 #from MolFS.MolDevice import *
 
 
+samplePath= "/home/acroper/Documents/NCAT/Research/DMOS/TestFiles/"
+
 fs = MolFS()
 fs.StartFS("Tests")
 
 
-fs.mkdir('Jorge')
+fs.mkdir('Texts')
 
-fs.mkdir('Test')
+fs.mkdir('Pictures')
 
-fs.mkdir('Other')
+fs.mkdir('Documents')
 
-fs.cd('Jorge')
+fs.mkdir('Videos')
 
-#fs.mkdir('Inner_Jorge')
-#
-#fs.cd('..')
-#
-#fs.cd('Test')
-#
-#fs.mkdir('Test_folder')
-#
-#fs.cd("..")
-#
-#fs.cd("Jorge")
-#
-#fs.cd('Inner_Jorge')
+fs.cd('Documents')
+fs.mkdir('MolFS_Code')
+
+fs.cd('..')
 
 
 
+fs.cd('Texts')
+fs.add(samplePath+'Text1.txt')
+fs.add(samplePath+'Text2.txt')
 
+fs.cd('..')
+fs.cd('Pictures')
+fs.add(samplePath+'testfile.jpg')
+fs.add(samplePath+'toma1.jpeg')
+# fs.add(samplePath+'jsnn-logo2.svg')
 
-#fs.add('/home/acroper/toma1.jpeg')
-fs.add('/home/acroper/Text1.txt')
-fs.add('/home/acroper/Text2.txt')
+# fs.cd('..')
+# fs.cd('Documents')
+# fs.add(samplePath+'2021_Research_Proposal_Jorge_Guerrero.pdf')
 
-fs.add('/home/acroper/testfile.jpg')
-fs.add('/home/acroper/toma1.jpeg')
+# fs.cd('..')
+# fs.cd('Videos')
+# fs.add(samplePath+'JSNN-dean.mp4.zip')
 
-
-
-#fs.add('/home/acroper/testfile.jpg')
 
 
 fs.Root.recursivePrint()
 
 #fs.Save()
+#fs.TimerLog()
 
 fs.WriteBlocks()
 
 
 
-#filname="/tmp/MolFS/Tests/Pools/Pool_1_Block_40.dna"
-#fs.mDevice.decode(filname, filname+".dec.bin")
-
 
 fs.readAll()
 
+
+fs.Stats()
 
 #mdev = MolDevice("seqnam")
 

@@ -22,11 +22,13 @@ Tasks resume
 [ ] Record DataBlocks on seqNAM
 [ ] Read DataBlocks from seqNAM
 
-[ ] Include init and ending strings for seqNAM
+[X] Include init and ending strings for seqNAM
 
 [ ] Create Sessions
 [ ] Open session
 [ ] Close session
+
+[ ] Include log of operations for statistics
 
 ------------------------------------------------
 

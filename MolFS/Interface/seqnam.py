@@ -106,7 +106,7 @@ class MolFSDev: ### class seqnam
         
         
         iterations = 0
-        nsegs = 129
+        nsegs = 130
         searchFlag1 = str.encode("--Init--MolFS--")
         searchFlag2 = str.encode("--MolFS--EOF--")
         while True:
@@ -123,16 +123,31 @@ class MolFSDev: ### class seqnam
                 if os.path.exists(out_file):
                     cont = binaryRead(out_file)
                     #cont2 = cont[-len(searchFlag):]
+                    k1=cont.find(searchFlag1)
+                    k2=cont.find(searchFlag2)
                     
-                    if cont.find(searchFlag1) != -1 and cont.find(searchFlag2) != -1:
-                        valid = True
+                    if k1 != -1 and k2 != -1: 
+                        
+                        numsize=cont[k2-7:k2-1]
+                        try:
+                            kn = int(numsize.decode())
+                            kn2 = k2-len(searchFlag1)-9
+                            if kn == kn2:
+                                valid = True
+                        except:
+                            print("Issues decoding file, attempt:", iterations)
+                        
+                        #if k2 == len(cont)-len(searchFlag2):
+                        #    valid = True
+                        #else:
+                        #    print("Issues decoding file, attempt:", iterations)
             #except:
             #    None
             
             if valid:
                 break;
             else:
-                if (nsegs==129):
+                if (nsegs==130):
                     nsegs = 0
                 nsegs += 1
                 
@@ -140,7 +155,7 @@ class MolFSDev: ### class seqnam
             
             
             
-            if iterations > 129:
+            if iterations > 130:
                 break;
                 
             #break ## just for one case

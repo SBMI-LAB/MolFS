@@ -120,7 +120,7 @@ class IndexFile:
             texto += ", offset = " + str(offsetin)
             texto += ", blocks = " + str(blocks)
             texto += ", size = " + str(size)
-            texto += " >"
+            texto += " ></extent>"
             
             
             self.writeline(texto)
