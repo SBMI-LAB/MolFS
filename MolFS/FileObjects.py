@@ -4,15 +4,19 @@ import shutil
 import pathlib
 import datetime
 import math
+import zlib
 
 from multiprocessing import Process
 
 from MolFS.Binary import *
 
-blockSize = 4096 # bytes
+#blockSize = 4096 # bytes
+blockSize = 65536 # bytes
 blocksPerPool = 50
 
 fillBlocks = False
+
+useZlib = False
 
 
 class folder:
@@ -491,14 +495,28 @@ class blocks:
         
         self.used = len(self.content)
         
-        sizeflag = str.encode( "["+str(self.used).zfill(7) +"]"  )
+        if useZlib:
+            contentZ = zlib.compress(self.content)
+            sizeflag = str.encode( "["+str(len(contentZ)).zfill(7) +"]"  )
+        else:
+            sizeflag = str.encode( "["+str(self.used).zfill(7) +"]"  )
+        
+        
         
         ### Add a signature to the content
-        content2 = self.initFlag + self.content +sizeflag+ self.endFlag
-        #content2 = self.content
+#        content2 = self.initFlag + self.content +sizeflag+ self.endFlag
+        
+        ## ZLib
+        if useZlib:
+            content2 = self.initFlag + contentZ +sizeflag+ self.endFlag
+        else:
+            content2 = self.initFlag + self.content +sizeflag+ self.endFlag
+        
+        
+        
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
         
-        binaryWriteHex(content2,self.PoolFolder +self.file)
+#        binaryWriteHex(content2,self.PoolFolder +self.file)
         
         binaryWrite(content2, self.PoolFolder +self.file + ".bin")
         
@@ -547,11 +565,14 @@ class blocks:
             self.content = binaryRead(filename+".dec.bin")
             
             sif = self.content.find(self.initFlag)
-            sef = self.content.find(self.endFlag)
+            sef = self.content.find(self.endFlag) - len(self.endFlag)-10
             if sif != -1:
                 self.content = self.content[sif + len(self.initFlag) :]
             if sef != -1:
                 self.content = self.content[:sef]
+            
+            if useZlib :
+                self.content = zlib.decompress(self.content)
         
         return self.content
     

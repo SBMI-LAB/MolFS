@@ -19,7 +19,10 @@ class MolFSDev: ### class seqnam
         '''
             Startup of the interface
         '''
-        ...
+#        self.nseg = 130
+#        self.nseg = 514
+        self.nseg = 2050
+        self.maxSeg = self.nseg + 20
     
     def encode(self, in_file, out_file):
         '''
@@ -106,7 +109,7 @@ class MolFSDev: ### class seqnam
         
         
         iterations = 0
-        nsegs = 130
+        nsegs = self.nseg
         searchFlag1 = str.encode("--Init--MolFS--")
         searchFlag2 = str.encode("--MolFS--EOF--")
         while True:
@@ -147,7 +150,7 @@ class MolFSDev: ### class seqnam
             if valid:
                 break;
             else:
-                if (nsegs==130):
+                if (nsegs==self.maxSeg):
                     nsegs = 0
                 nsegs += 1
                 
@@ -155,7 +158,7 @@ class MolFSDev: ### class seqnam
             
             
             
-            if iterations > 130:
+            if iterations > self.maxSeg:
                 break;
                 
             #break ## just for one case

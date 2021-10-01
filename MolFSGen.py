@@ -227,14 +227,8 @@ class MolFS:
     
     def addFolder(self, folder, restore = True):
         
-        
-        
-        
         if restore:
             ubication = self.CF
-        
-        
-        
         
         if os.path.isdir(folder):
             

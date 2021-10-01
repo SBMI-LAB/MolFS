@@ -11,24 +11,12 @@ from MolFSGen import *
 
 
 samplePath= "/home/acroper/Documents/NCAT/Research/DMOS/TestFiles/"
-
 fs = MolFS()
 fs.StartFS("Tests")
-
-
 fs.mkdir('Texts')
-
 fs.mkdir('Pictures')
-
 fs.mkdir('Documents')
-
 fs.mkdir('Videos')
-
-fs.cd('Documents')
-fs.mkdir('MolFS_Code')
-
-fs.cd('..')
-
 
 
 fs.cd('Texts')
@@ -39,15 +27,18 @@ fs.cd('..')
 fs.cd('Pictures')
 fs.add(samplePath+'testfile.jpg')
 fs.add(samplePath+'toma1.jpeg')
-# fs.add(samplePath+'jsnn-logo2.svg')
+fs.add(samplePath+'jsnn-logo2.svg')
 
-# fs.cd('..')
-# fs.cd('Documents')
-# fs.add(samplePath+'2021_Research_Proposal_Jorge_Guerrero.pdf')
+fs.cd('..')
+fs.cd('Documents')
+fs.add(samplePath+'2021_Research_Proposal_Jorge_Guerrero.pdf')
+#fs.addFolder('/home/acroper/Documents/NCAT/Research/DMOS/TestFiles/Papers')
 
-# fs.cd('..')
-# fs.cd('Videos')
-# fs.add(samplePath+'JSNN-dean.mp4.zip')
+
+fs.cd('..')
+fs.cd('Videos')
+fs.add(samplePath+'JSNN-dean.mp4.zip')
+
 
 
 
