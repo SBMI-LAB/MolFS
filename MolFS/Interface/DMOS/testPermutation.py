@@ -17,12 +17,14 @@ class DMOS_Address:
         for i in range(1,n+1):
             j = math.floor( Nm / math.factorial(n-i) )
             
-#            print (i, j, n-i, math.factorial(n-i))
+            Kn =  math.remainder(Nm, math.factorial (n-i))
+#            print (i, j, n-i, math.factorial(n-i), Kn, Nm)
             if j > 0:
                 perNum += hex(numbers[j])[2:]
                 numbers.remove(numbers[j])
 #                Nm =  abs(math.remainder(Nm, math.factorial (n-i)))
-                Nm =  math.remainder(Nm, math.factorial (n-i))
+#                Nm =  math.remainder(Nm, math.factorial (n-i))
+                Nm = Nm % math.factorial (n-i)
             else:
                 perNum += hex(numbers[j])[2:]
                 numbers.remove(numbers[j])
@@ -80,7 +82,7 @@ class DMOS_Address:
     
 
 addrn = DMOS_Address()
-k = addrn.encode(10471)  
+k = addrn.encode(8)  
 print(k)
 k = addrn.decode(k)
 print(k)
