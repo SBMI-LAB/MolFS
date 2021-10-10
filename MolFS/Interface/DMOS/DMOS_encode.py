@@ -50,6 +50,6 @@ class DMOSEnc:
             
                     
 dmod = DMOSEnc()
-k1 = [0,6]
+k1 = [0,255]
 dmod.Hex2MD(k1)        
 
