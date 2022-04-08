@@ -31,7 +31,7 @@ class MolFS:
         
         
     
-    def StartFS(self, Name):
+    def StartFS(self, Name, devType = "DMOS"):
         # Open or create a new FileSystem with the given name
         
         self.Name = Name
@@ -67,7 +67,7 @@ class MolFS:
 #        else:
         self.CreateFS()
         
-        self.mDevice = MolDevice("seqnam")
+        self.mDevice = MolDevice(devType.lower())
         
         self.Root.mDevice = self.mDevice
         self.indexFile.IndexPool.mDevice = self.mDevice
@@ -281,7 +281,13 @@ class MolFS:
                 strands += lineas - 1
             
             size += lsize
-                
+        
+        ## Adjust
+        if self.mDevice.devtype == "dmos":
+            strandsn = (strands-len(self.Root.blocks))/5
+            strands = round(strandsn)
+
+        
         return strands, size
     
     
@@ -293,23 +299,30 @@ class MolFS:
         blocks = len(self.Root.blocks)
         pools = self.Root.Pools
         
-        
+        time.sleep(0.1)
         print("------------------------------- ")
         print("\nMolecular File System - MOLFS\n")
+        print("Device type: " + self.mDevice.devtype.upper())
         
-        if et != -1:
-            print("Encoding time:", et, "secods")
-        if dt != -1:
-            print("Decoding time:", dt, "secods")
+        if self.mDevice.Active:
+        
+            if et != -1:
+                print("Encoding time:", et, "secods")
+            if dt != -1:
+                print("Decoding time:", dt, "secods")
+                
+            if et != -1:
+                print("Blocks generated:" , blocks)
+                print("Pools generated:" , pools)
+                
+                strands, size = self.countStrands()
+                
+                print("DNA strands:", strands)
+                print("Binary use:", size, " bytes")
+        else:
+            print("Error opening device")
             
-        if et != -1:
-            print("Blocks generated:" , blocks)
-            print("Pools generated:" , pools)
-            
-            strands, size = self.countStrands()
-            
-            print("DNA strands:", strands)
-            print("Binary use:", size, " bytes")
+        return et, dt,  blocks, pools, strands, size            
             
             
             

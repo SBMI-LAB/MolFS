@@ -68,7 +68,7 @@ class Pool:
                     data_corrected = list(self.RSCodec.decode(data))
                 except ReedSolomonError:
                     return -1  # could not correct the code
-
+                
                 # we will encode the data again to evaluate the correctness of the decoding
                 data_again = list(self.RSCodec.encode(data_corrected))  # list is to convert byte list to int
 

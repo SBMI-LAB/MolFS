@@ -14,15 +14,22 @@ class IndexFile:
         
         self.files = []
         
+        
         self.FSPath = ""
         
         self.IndexPool = folder("")
+        
+        self.LastId = 0
         
         
     
     
     def addFiles(self, file):
         self.files.append(file)
+        
+        file.Id = self.LastId
+        
+        self.LastId += 1
     
     
     
@@ -100,7 +107,7 @@ class IndexFile:
     
     def writeFile(self, file):
         
-        self.writeline("<file name = '"+file.Name + "'>")
+        self.writeline("<file id = '"+str(file.Id)+"' name = '"+file.Name + "'>")
         self.incTab()
         
         k = 0

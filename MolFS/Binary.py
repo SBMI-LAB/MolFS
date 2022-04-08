@@ -42,6 +42,31 @@ def binaryWrite(content, filename):
     f.write(content)
     f.close()
     
+
+def binText(inFile, outFile):
+    # Converts a binary file into a text file, with new lines
+    # each time
+    
+    lineSize = 1
+    
+    f = open(inFile, 'rb')
+    content = f.read()
+    f.close()
+    
+    f2 = open(outFile,'w')
+    
+    xl = 0
+    
+    for cbyte in content:
+        f2.write(str(cbyte))
+        xl+=1
+        if xl >= lineSize:
+            f2.write("\n")
+            xl=0
+        
+    
+    f2.close()
+    
     
 def dprint(text):
     print(text)

@@ -11,12 +11,21 @@ from multiprocessing import Process
 from MolFS.Binary import *
 
 #blockSize = 4096 # bytes
-blockSize = 65536 # bytes
+# blockSize = 65536 # bytes
+blockSize = 3072*8 # bytes
+# blockSize = 16 # bytes
 blocksPerPool = 50
 
 fillBlocks = False
 
 useZlib = False
+
+useBlockFlags = True
+
+## alter block size if use BlockFlags
+if useBlockFlags:
+    FlagSize=len("--Init--MolFS--[0000000]--MolFS--EOF--") ## Standard flag
+    blockSize -= FlagSize
 
 
 class folder:
@@ -50,8 +59,9 @@ class folder:
     
     def addFile(self, file):
         self.files.append(file)
-        
         self.Index.addFiles(file)
+        
+        
 
     def addNewFile (self, filename, localpath):
         shutil.copyfile(filename, localpath )  # create a copy 
@@ -284,6 +294,8 @@ class files:
         
         self.Name = name
         
+        self.Id = 0
+        
         self.status = ""
         self.creationDate = ""
         self.ModifyDate = ""
@@ -475,6 +487,10 @@ class blocks:
         
         self.endFlag = str.encode("--MolFS--EOF--")
         
+        self.Address = 0
+        
+        self.Cached = False
+        
     
     def addToBlock(self, cont):
         if self.content == None:
@@ -507,11 +523,17 @@ class blocks:
 #        content2 = self.initFlag + self.content +sizeflag+ self.endFlag
         
         ## ZLib
-        if useZlib:
-            content2 = self.initFlag + contentZ +sizeflag+ self.endFlag
-        else:
-            content2 = self.initFlag + self.content +sizeflag+ self.endFlag
         
+        if useBlockFlags:
+            if useZlib:
+                content2 = self.initFlag + contentZ +sizeflag+ self.endFlag
+            else:
+                content2 = self.initFlag + self.content +sizeflag+ self.endFlag
+        else:
+            if useZlib:
+                content2 = contentZ
+            else:
+                content2 = self.content
         
         
         self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
@@ -523,6 +545,10 @@ class blocks:
         #self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
         
     def encode(self):
+        if self.block == 0:
+            self.mDevice.setAddress(0)
+            
+            
         self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
         
     def writeclose (self):
@@ -549,30 +575,34 @@ class blocks:
         
     def getContent(self):
         ## Read binary file
-        self.content = []
         
-        self.checkFolder()
-        
-        self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
-        #filename = self.FS.PoolsPath+self.file
-        filename = self.PoolFolder+self.file
-        
-        #if os.path.exists(self.PoolFolder+self.file+".bin"):
-        if os.path.exists(filename+".dna"):
-            #self.content = HexRead(filename)
+        if self.Cached == False:
+            self.content = []
             
-            self.mDevice.decode(filename+".dna", filename+".dec.bin")
-            self.content = binaryRead(filename+".dec.bin")
+            self.checkFolder()
             
-            sif = self.content.find(self.initFlag)
-            sef = self.content.find(self.endFlag) - len(self.endFlag)-10
-            if sif != -1:
-                self.content = self.content[sif + len(self.initFlag) :]
-            if sef != -1:
-                self.content = self.content[:sef]
+            self.file = "Pool_"+str(self.pool)+"_Block_"+str(self.block)
+            #filename = self.FS.PoolsPath+self.file
+            filename = self.PoolFolder+self.file
             
-            if useZlib :
-                self.content = zlib.decompress(self.content)
+            #if os.path.exists(self.PoolFolder+self.file+".bin"):
+            if os.path.exists(filename+".dna"):
+                #self.content = HexRead(filename)
+                
+                self.mDevice.decode(filename+".dna", filename+".dec.bin")
+                self.content = binaryRead(filename+".dec.bin")
+                
+                sif = self.content.find(self.initFlag)
+                sef = self.content.find(self.endFlag) - len(self.endFlag)-10
+                if sif != -1:
+                    self.content = self.content[sif + len(self.initFlag) :]
+                if sef != -1:
+                    self.content = self.content[:sef]
+                
+                if useZlib :
+                    self.content = zlib.decompress(self.content)
+            
+            self.Cached = True
         
         return self.content
     
