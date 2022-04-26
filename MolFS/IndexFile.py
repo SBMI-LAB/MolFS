@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from MolFS.FileObjects import *
+# from MolFS.FileObjects import *
+from MolFS.Folder import *
+from MolFS.File import *
 
 class IndexFile:
     

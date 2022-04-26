@@ -13,6 +13,6 @@ fs.addFolder("/home/acroper/Documents/Tax")
 fs.Root.recursivePrint()
 
 fs.WriteBlocks()
-fs.readAll()
+# fs.readAll()
 fs.Stats()
 

@@ -18,9 +18,9 @@ blocksPerPool = 50
 
 fillBlocks = False
 
-useZlib = False
+useZlib = True
 
-useBlockFlags = True
+useBlockFlags = False
 
 ## alter block size if use BlockFlags
 if useBlockFlags:
@@ -507,6 +507,7 @@ class blocks:
     
     def write(self):
         # Check block name
+        
         self.checkFolder()
         
         self.used = len(self.content)
@@ -594,18 +595,46 @@ class blocks:
                 
                 sif = self.content.find(self.initFlag)
                 sef = self.content.find(self.endFlag) - len(self.endFlag)-10
-                if sif != -1:
+                if sif > -1:
                     self.content = self.content[sif + len(self.initFlag) :]
-                if sef != -1:
+                if sef > -1:
                     self.content = self.content[:sef]
                 
                 if useZlib :
-                    self.content = zlib.decompress(self.content)
+                    self.tryGetCompress()
+                    # self.content = zlib.decompress(self.content)
             
             self.Cached = True
         
         return self.content
     
+        
+    def tryGetCompress(self):
+        attempts = 10
+        success = False
+        
+        content = self.content
+        
+        for k in range(attempts):
+            
+            try:
+                print("Step ", k , " uncompressing")
+                restored = zlib.decompress(content)
+                success = True
+                
+                
+            except:
+                content = content[:-1]
+                success = False
+                
+            
+            if success:
+                self.content = restored
+                break;
+        
+        if not success:
+            print("Error decompressing")
+            
     
     def countStrands(self):
         """

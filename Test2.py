@@ -12,7 +12,7 @@ from MolFSGen import *
 
 samplePath= "/home/acroper/Documents/NCAT/Research/DMOS/TestFiles/"
 fs = MolFS()
-fs.StartFS("Tests")
+fs.StartFS("DMOSTest", "dmos")
 fs.mkdir('Texts')
 fs.mkdir('Pictures')
 fs.mkdir('Documents')
@@ -20,24 +20,24 @@ fs.mkdir('Videos')
 
 
 fs.cd('Texts')
-fs.add(samplePath+'Text1.txt')
-fs.add(samplePath+'Text2.txt')
+#fs.add(samplePath+'Text1.txt')
+#fs.add(samplePath+'Text2.txt')
 
 fs.cd('..')
 fs.cd('Pictures')
-fs.add(samplePath+'testfile.jpg')
+#fs.add(samplePath+'testfile.jpg')
 fs.add(samplePath+'toma1.jpeg')
-fs.add(samplePath+'jsnn-logo2.svg')
-
-fs.cd('..')
-fs.cd('Documents')
-fs.add(samplePath+'2021_Research_Proposal_Jorge_Guerrero.pdf')
-#fs.addFolder('/home/acroper/Documents/NCAT/Research/DMOS/TestFiles/Papers')
-
-
-fs.cd('..')
-fs.cd('Videos')
-fs.add(samplePath+'JSNN-dean.mp4.zip')
+#fs.add(samplePath+'jsnn-logo2.svg')
+#
+#fs.cd('..')
+#fs.cd('Documents')
+#fs.add(samplePath+'2021_Research_Proposal_Jorge_Guerrero.pdf')
+##fs.addFolder('/home/acroper/Documents/NCAT/Research/DMOS/TestFiles/Papers')
+#
+#
+#fs.cd('..')
+#fs.cd('Videos')
+#fs.add(samplePath+'JSNN-dean.mp4.zip')
 
 
 
@@ -52,7 +52,7 @@ fs.WriteBlocks()
 
 
 
-fs.readAll()
+#fs.readAll()
 
 
 fs.Stats()
