@@ -32,7 +32,7 @@ class Session:
     indexFile = None
     Root = None
     mDevice = None
-    
+        
     Status = "NAN"
     
     LastId = 0
@@ -52,7 +52,7 @@ class Session:
         # Create a session
         self.Name = Name
         
-        self.FSPath = self.MolPath + self.Name + "/" + str(self.number) + "/"
+        self.FSPath = self.MolPath + self.Name + "/Session_" + str(self.number) + "/"
         
         self.indexFile = IndexFile(self.Name)
         self.indexFile.IndexPool.Index = IndexFile("Temp")
@@ -67,6 +67,11 @@ class Session:
         self.CreateFS()
         self.Status = "Open"
         
+        
+        if self.Prev != None:
+            self.Root.lastBlock = self.Prev.Root.lastBlock
+            
+            
         
 
         
@@ -95,10 +100,16 @@ class Session:
         self.CachePath = self.FSPath + "Cache/"
         
         # Path for the Current Session
-        self.Current = self.FSPath + "Current/"
+        self.Current = self.MolPath + self.Name + "/Current/"
+        
+        # Path for the Previous Session        
+        self.Previous = self.MolPath + self.Name + "/Previous/"
+        
+        self.Patches = self.MolPath + self.Name + "/Patches/"
+        
         
         # Path for the binary input files
-        self.SourcePath = self.FSPath + "Source/"
+        self.SourcePath = self.Current
         
         # Path for the binary output files 
         self.OutputPath = self.FSPath + "Output/"
@@ -110,12 +121,21 @@ class Session:
         self.InterfaceIn = self.FSPath + "Interface/In"
         
         os.makedirs(self.FSPath, exist_ok = True)
+        os.makedirs(self.Current, exist_ok = True)
+        os.makedirs(self.Previous, exist_ok = True)
+        os.makedirs(self.Patches, exist_ok = True)
         os.makedirs(self.PoolsPath, exist_ok = True)
         os.makedirs(self.SourcePath, exist_ok = True)
         os.makedirs(self.OutputPath, exist_ok = True)
         
-        os.makedirs(self.InterfaceOut, exist_ok = True)
-        os.makedirs(self.InterfaceIn, exist_ok = True)
+        #os.makedirs(self.InterfaceOut, exist_ok = True)
+        #os.makedirs(self.InterfaceIn, exist_ok = True)
+        
+        
+        """
+        Newly created sessions are actually the current session.
+        The source files must be copied first to the "current" folder.
+        """
         
         
         dprint("System created")

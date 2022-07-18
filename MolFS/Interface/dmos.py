@@ -32,7 +32,9 @@ class MolFSDev: ### class dmos
     msgSize = 48*8  ##  384
     codeSize = 512
 
-
+    encoder = "LDPC_768_PR"
+    msgSize = 72*8  ##  576
+    codeSize = 768
 
     # encoder = "LDPC_4096_PR"
     # msgSize = 384*8  ## 3072

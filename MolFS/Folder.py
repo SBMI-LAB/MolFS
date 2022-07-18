@@ -23,6 +23,8 @@ class folder:
         
         self.files = []
         
+        self.patches = []
+        
         self.status = ""
         
         self.parent = None
@@ -39,12 +41,38 @@ class folder:
         
         self.Pools = 0
         
+        self.lastBlock = -1
+        
+        self.useZlib = False
+        
+        self.InternalPath = ""
+        
+        
+    
+    
+    def setUseZlib (self, value):
+        self.useZlib = value
+        for block in self.blocks:
+            block.useZlib = value
+            
+    
     
     def addFile(self, file):
         self.files.append(file)
         self.Index.addFiles(file)
         
+    
+
+    def addPatchFile(self, filename, localpath, fileID):
+        npath = os.path.basename(filename) # cut path
+        nfile = files(npath)  
+        self.patches.append(nfile)
         
+        self.Index.addPatch(nfile, fileID)
+        
+        nfile.addPatchFile(filename, localpath)
+        nfile.InternalPath = self.InternalPath +npath
+    
 
     def addNewFile (self, filename, localpath):
         
@@ -53,6 +81,8 @@ class folder:
         self.addFile(nfile)
         
         nfile.addNewFile(filename, localpath)
+        
+        nfile.InternalPath = self.InternalPath +npath
         
         
         
@@ -75,6 +105,8 @@ class folder:
         folder.parent = self
         folder.Index = self.Index
         folder.mDevice = self.mDevice
+        
+        folder.InternalPath = self.InternalPath + "/" + folder.Name + "/"
 
     def getParent(self):
         if self.parent == None:
@@ -119,6 +151,39 @@ class folder:
             k.recursivePrint(npath)
             
     
+    def readSession(self, path = ""):
+        
+        self.readAllFiles(path)
+        if self.Name != "":
+            npath = path + self.Name + "/"
+        else:
+            npath = path
+            
+        for k in self.patches:
+            k.readFile(npath)
+            
+            self.ApplyPatch(k, path)
+        
+    
+    def ApplyPatch(self, patch, path ):
+        ### The patch file is associated to another file
+        ID = patch.Id
+        
+        ## Identify the target file
+        GlobalIndex = self.Index.GlobalIndex
+        
+        for file in GlobalIndex.files:
+            if file.Id == ID:
+                ## Proceeding to patch the file
+                print("Patching the file:")
+                filepath = path +  file.InternalPath
+                patchpath = path + patch.InternalPath 
+                
+                restorePatch(filepath, patchpath)
+        
+        
+    
+    
     def readAllFiles(self, path = ""):
         # Read files recursively
         if self.Name != "":
@@ -145,8 +210,9 @@ class folder:
         
         if len(self.blocks) == 0:
             block = blocks(self)
+            block.useZlib = self.useZlib
             block.pool = self.initPool #1
-            block.block = 0
+            block.block = self.lastBlock + 1
         else:
             lblock = self.blocks[-1]
             if lblock.used == blockSize:
@@ -218,7 +284,7 @@ class folder:
             #block.content = extn
             block.addToBlock(extn)
            
-            
+            self.lastBlock = block.block
             self.blocks.append(block)
 
             file.add_extents(block)  # examine the extents in the file
@@ -255,7 +321,8 @@ class folder:
             #    break
             
             #print( numblocks,  k , "- block ", n, " pool ", pool)
-            
+        
+        
         print("Writen ", k , " blocks" )
         
         
@@ -268,7 +335,10 @@ class folder:
         for k in self.Index.files:
             if len(k.extents) == 0: ## Not generated
                 self.addNewBlocks(k)
-            
+        
+        for k in self.Index.patches:
+            if len(k.extents) == 0: ## Not generated
+                self.addNewBlocks(k)
        
         if len(self.blocks) > 0:
             #self.blocks[-1].writeclose()

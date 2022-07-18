@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ### Binary operations
-
+import subprocess
+import os
+import shutil
 
 def binaryRead(filename):
     ## Read a whole binary file in memory and
@@ -70,3 +72,42 @@ def binText(inFile, outFile):
     
 def dprint(text):
     print(text)
+    
+# -*- coding: utf-8 -*-
+
+### DiffScript
+
+def genPatch (Original, Modified, Patch):
+
+    subprocess.run("diff --minimal " + Original + "  " + Modified +  " > " + Patch, shell = True )
+    
+    ### Check the file
+    size = os.stat(Patch).st_size
+    
+    if size > 0:
+        return True
+    else:
+        return False
+    
+
+
+def restorePatch (Original, Patch):
+    # Original = os.path.join("Original", filename)
+    # Patch = os.path.join("Patches", filename2+".patch")
+    # Restored = os.path.join("Reconstructed", filename2)
+    
+    Restored = "/tmp/RestoredPatch"
+    
+    subprocess.run("patch " + Original + " -i " + Patch +  " -o " + Restored , shell = True)
+    
+    shutil.copyfile(Restored, Original)
+    
+    
+
+def restorePatch2 (filename, filename2, outputfile):
+    Original = filename
+    Patch =  filename2
+    Restored = outputfile
+    
+    subprocess.run("patch " + Original + " -i " + Patch +  " -o " + Restored , shell = True)
+

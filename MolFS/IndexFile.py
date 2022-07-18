@@ -16,12 +16,15 @@ class IndexFile:
         
         self.files = []
         
+        self.patches = []
         
         self.FSPath = ""
         
         self.IndexPool = folder("")
         
         self.LastId = 0
+        
+        self.GlobalIndex = None
         
         
     
@@ -32,7 +35,19 @@ class IndexFile:
         file.Id = self.LastId
         
         self.LastId += 1
+        
+        if self.GlobalIndex != None:
+            self.GlobalIndex.addFiles(file)
     
+    
+    def addPatch(self, file, ID):
+        
+        self.patches.append(file)
+        
+        file.Id = ID
+        
+        if self.GlobalIndex != None:
+            self.GlobalIndex.addPatch(file, ID)
     
     
     def readFS(self):
@@ -61,9 +76,12 @@ class IndexFile:
         
         self.recursiveFolder(self.Root)
         
-        
         self.decTab()
+        
+        self.writePatches()
+        
         self.writeline("</MolFS>")
+        self.decParam()
         
         
         
@@ -105,7 +123,36 @@ class IndexFile:
         
         self.decTab()
         self.writeline("</folder>")
+        
     
+    def decParam(self):
+#        self.writeline("<decP>")
+        deP = "<decP>"
+        np = len(self.Root.blocks)
+        for block in self.Root.blocks:
+            nt = block.encodeParam
+            if type(nt) == str:
+                deP += nt
+            else:
+                deP += str(nt)
+            deP += " "
+        
+        deP +="</decP>"
+        
+        self.writeline(deP)
+    
+    
+    def writePatches(self):
+        
+        if len(self.patches) == 0:
+            return
+        
+        self.writeline("<patches>")
+        self.incTab()
+        for patch in self.patches:
+            self.writeline("<patch id='"+str(patch.Id)+"' name = '"+patch.Name + "'>")
+        self.decTab()
+        self.writeline("</patches>")
     
     def writeFile(self, file):
         

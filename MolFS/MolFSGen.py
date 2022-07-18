@@ -54,15 +54,21 @@ class MolFS:
         self.DecodeTime = -1   
         self.Name = "Test"
         
+        self.GlobalIndex = None
+        
         
     def StartFS(self, Name = ""):
         # Open or create a new FileSystem with the given name
+        
+        if self.GlobalIndex == None:
+            self.GlobalIndex = IndexFile(Name)
         
         if self.InitSession == None:        
             self.InitSession = Session()
             self.CurrentSession = self.InitSession
         else:
             nSession = Session(self.CurrentSession)
+            
             self.CurrentSession = nSession
             
             
@@ -70,8 +76,6 @@ class MolFS:
         self.CurrentSession.mDevice = self.mDevice
         
         self.CurrentSession.Create(Name)
-        
-        
 
         self.Name = Name
         
@@ -81,6 +85,10 @@ class MolFS:
         
         self.indexFile = self.CurrentSession.indexFile
         self.Root = self.CurrentSession.Root
+        
+        
+        self.indexFile.GlobalIndex = self.GlobalIndex
+        
         
         # self.indexFile = IndexFile(Name)
         
@@ -205,8 +213,43 @@ class MolFS:
         
 
     def CloseSession(self):
-        self.WriteBlocks()
+        
+        self.CheckDifferential()
+        
+        self.WriteBlocks()        
+        self.MoveToPrevious()
         self.CurrentSession.Close()
+        
+
+    def CheckDifferential(self):
+        ### Recursively compare the files of the current session and previous session
+        for file in self.GlobalIndex.files:
+            
+            CFile = file.localPath
+            PFile = CFile.replace("Current", "Previous")
+            
+            print("Last session Path:", CFile)
+            print("Previous session Path:", PFile)
+            if os.path.exists(PFile): # path exists
+                if os.path.isfile(PFile): # is file
+                    ### Compare files
+                    print("Comparing the two files")
+                    patchFile =  self.CurrentSession.Patches + "Patch_F_" + str(file.Id) + "-S" +str(self.CurrentSession.number) + ".patch"
+                    success = genPatch(PFile, CFile, patchFile)
+                    
+                    if success:
+                        ## Add the patchFile to the system
+                        npath = os.path.basename(patchFile)
+                        # self.Root.addNewFile(patchFile, self.CurrentSession.Current + npath)
+                        self.Root.addPatchFile(patchFile, self.CurrentSession.Current + npath, file.Id)
+            
+            
+        
+    
+    def MoveToPrevious(self):
+        ### Copy files from current to previous session
+        # self.Root.readAllFiles(self.CurrentSession.Previous)
+        self.Root.readSession(self.CurrentSession.Previous)
         
     
     def CreateSession(self):

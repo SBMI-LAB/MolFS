@@ -13,7 +13,7 @@ from MolFS.Binary import *
 
 #blockSize = 4096 # bytes
 # blockSize = 65536 # bytes
-blockSize = 3072*8 # bytes
+blockSize = 3072*2*8 # bytes
 # blockSize = 16 # bytes
 blocksPerPool = 50
 
@@ -21,11 +21,11 @@ fillBlocks = False
 
 useZlib = True
 
-useBlockFlags = False
+useBlockFlags = True
 
 ## alter block size if use BlockFlags
 if useBlockFlags:
-    FlagSize=len("--Init--MolFS--[0000000]--MolFS--EOF--") ## Standard flag
+    FlagSize=len("--Init--MolFS--[0000][0000000]--MolFS--EOF--") ## Standard flag
     blockSize -= FlagSize
 
 
@@ -40,6 +40,8 @@ class blocks:
         self.FS = FS
         
         self.file = ""
+        
+        self.encodeParam = 0
         
         self.content = None
         
@@ -66,7 +68,7 @@ class blocks:
     
     def setFlags(self):
         self.useBlockFlags = True
-        FlagSize=len("--Init--MolFS--[0000000]--MolFS--EOF--") ## Standard flag
+        FlagSize=len("--Init--MolFS--[0000][0000000]--MolFS--EOF--") ## Standard flag
         self.blockSize =   self.rBlockSize - FlagSize
         
     def unsetFlags(self):
@@ -93,25 +95,28 @@ class blocks:
         
         self.used = len(self.content)
         
+        nameflag = str.encode("["+str(self.pool)+"_"+str(self.block)+"]")
+        
         if self.useZlib:
             contentZ = zlib.compress(self.content)
-            sizeflag = str.encode( "["+str(len(contentZ)).zfill(7) +"]"  )
+            sizeflag = str.encode( "["+str(len(contentZ) ).zfill(7) +"]"  )
         else:
-            sizeflag = str.encode( "["+str(self.used).zfill(7) +"]"  )
+            sizeflag = str.encode( "["+str(self.used ).zfill(7) +"]"  )
         
         
         
         ### Add a signature to the content
 #        content2 = self.initFlag + self.content +sizeflag+ self.endFlag
         
+        
         ## ZLib
         
         
         if useBlockFlags:
             if self.useZlib:
-                content2 = self.initFlag + contentZ +sizeflag+ self.endFlag
+                content2 = self.initFlag + contentZ +sizeflag+ self.endFlag + nameflag
             else:
-                content2 = self.initFlag + self.content +sizeflag+ self.endFlag
+                content2 = self.initFlag + self.content +sizeflag+ self.endFlag + nameflag
         else:
             if self.useZlib:
                 content2 = contentZ
@@ -133,6 +138,8 @@ class blocks:
             
             
         self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
+        
+        self.encodeParam = self.mDevice.encodeParam[0]
         
     def writeclose (self):
         # Close the DataBlock
@@ -171,7 +178,7 @@ class blocks:
             #if os.path.exists(self.PoolFolder+self.file+".bin"):
             if os.path.exists(filename+".dna"):
                 #self.content = HexRead(filename)
-                
+                self.mDevice.setDecodeParam(self.encodeParam)
                 self.mDevice.decode(filename+".dna", filename+".dec.bin")
                 self.content = binaryRead(filename+".dec.bin")
                 

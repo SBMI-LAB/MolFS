@@ -18,6 +18,8 @@ class MolDevice:
         
         self.mDevice = None
         
+        self.encodeParam = [0]
+        
         self.selectDevice()
         #self.readDevice()
         
@@ -59,9 +61,17 @@ class MolDevice:
         else:
             print("Device is not ready")            
         
+    def getAddress(self):
+        if self.Active:
+            return self.mDevice.Address
+        else:
+            print("Device is not ready")
+            return -1
+    
     def encode(self, file_in, file_out):
         if self.Active:
             self.mDevice.encode(file_in, file_out)
+            self.encodeParam[0] = self.mDevice.encodeParam
         else:
             print("Device is not ready")
     
@@ -76,7 +86,9 @@ class MolDevice:
             self.mDevice.simulate(file_in, file_out)
         else:
             print("Device is not ready")
-        
+    
+    def setDecodeParam(self, param):
+        self.mDevice.decodeParam = param
         
         
 

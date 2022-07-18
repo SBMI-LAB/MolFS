@@ -29,6 +29,10 @@ class files:
         
         self.Id = -1 ## Undefined ID
         
+        self.localPath = ""
+        
+        self.InternalPath = ""
+        
         self.extents = []
         
     
@@ -40,6 +44,19 @@ class files:
         self.modified = True # File is modified
         self.ModifyDate = self.checkModified()
         
+        self.localPath = localpath
+        
+
+    def addPatchFile(self, filename, localpath):
+
+        #shutil.copyfile(filename, localpath )  # create a copy 
+        self.LocalFile = filename 
+        self.available = True
+        self.modified = True # File is modified
+        self.ModifyDate = self.checkModified()
+        
+        self.localPath = filename
+
     
     
     def dirPrint(self, path):

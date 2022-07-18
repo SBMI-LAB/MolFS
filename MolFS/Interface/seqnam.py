@@ -23,6 +23,9 @@ class MolFSDev: ### class seqnam
 #        self.nseg = 514
         self.nseg = 2050
         self.maxSeg = self.nseg + 20
+        
+        self.encodeParam = 1
+        self.decodeParam = 1
     
     def encode(self, in_file, out_file):
         '''
@@ -64,8 +67,10 @@ class MolFSDev: ### class seqnam
         argsn.seed_size = 4
         argsn.config_file = False
         
-        seqNAMencode(argsn)
-    
+        encodeInfo = seqNAMencode(argsn)
+        
+        print("Total segments: ",  encodeInfo["total_number_of_segment"])
+        self.encodeParam = encodeInfo["total_number_of_segment"]
     
     def decode(self,in_file, out_file):
         '''
@@ -109,9 +114,17 @@ class MolFSDev: ### class seqnam
         
         
         iterations = 0
+        
+        
+        
         nsegs = self.nseg
+        nsegs = self.decodeParam
+        
         searchFlag1 = str.encode("--Init--MolFS--")
         searchFlag2 = str.encode("--MolFS--EOF--")
+        
+        
+        
         while True:
             valid = False
             argsn.num_segments = nsegs
@@ -120,6 +133,7 @@ class MolFSDev: ### class seqnam
                 os.remove(out_file)  
                 
             if True:
+                print("Attemp decode using",nsegs, "segments")
                 seqNAMdecode(argsn)
             
                 ## Check file

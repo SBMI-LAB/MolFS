@@ -77,23 +77,3 @@ class DMOS_Address:
                 
             
         
-        
-                
-            
-    
-#
-#addrn = DMOS_Address()
-#
-#for k in range(0,10):
-#    Ls = addrn.encode(k)  
-#    print (Ls)
-#    Ld = addrn.decode(Ls)
-#    print(Ld)
-#    
-#    if Ld != k:
-#        print("Error in ", k, Ld)
-
-        
-        
-        
-        
