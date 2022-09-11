@@ -5,6 +5,9 @@
 import os
 import sys
 import types
+
+from addressEncoder import *
+
 from MolFS.Binary import *
 
 sys.path.insert(1,"MolFS/Interface/seqNAM")
@@ -26,6 +29,11 @@ class MolFSDev: ### class seqnam
         
         self.encodeParam = 1
         self.decodeParam = 1
+        
+        self.Address = 0
+        
+        self.Block = 0
+        self.Pool = 0
     
     def encode(self, in_file, out_file):
         '''
@@ -38,6 +46,13 @@ class MolFSDev: ### class seqnam
 
         #file_path = os.path.dirname(__file__)
         #print(os.path.abspath(__file__))
+        
+        dA = DNAAddress()
+        
+        nAddress = (self.Pool+1)*200 + (self.Block+1)*3
+        
+        primer = dA.encode(nAddress)
+        
 
         argsn = types.SimpleNamespace()
         argsn.file_in = in_file #"seqNAM/testfile.jpg"
@@ -50,7 +65,7 @@ class MolFSDev: ### class seqnam
         argsn.map = "MolFS/Interface/seqNAM/original_map.txt"
         
         
-        argsn.alpha = 0.1
+        argsn.alpha = 1  ## Redundancy
         
         argsn.output_format = "sequence_only"        
         argsn.ensure_decode_ability = True
@@ -60,7 +75,8 @@ class MolFSDev: ### class seqnam
         argsn.plate_info = "Plate"
         argsn.plate_cells = 384
         argsn.strand_name = "seqNAM01-seq"
-        argsn.fwd_primer = "ACATCCAACACTCTACGCCC"
+#        argsn.fwd_primer = "ACATCCAACACTCTACGCCC"
+        argsn.fwd_primer = primer
         argsn.bwd_primer = "GTGTGTTGCGGCTCCTATTC"
         argsn.maximum_gc = 0.55
         argsn.minimum_gc = 0.45
@@ -76,7 +92,9 @@ class MolFSDev: ### class seqnam
         '''
             Decode a DNA file (FastQ) from in_file
         '''
-
+        dA = DNAAddress()
+        nAddress = (self.Pool+1)*200 + (self.Block+1)*3
+        primer = dA.encode(nAddress)
         
         argsn = types.SimpleNamespace()
         argsn.file_in = in_file #"seqNAM/testfile.dna"
@@ -97,7 +115,8 @@ class MolFSDev: ### class seqnam
         argsn.plate_info = "Plate"
         argsn.plate_cells = 384
         argsn.strand_name = "seqNAM01-seq"
-        argsn.fwd_primer = "ACATCCAACACTCTACGCCC"
+#        argsn.fwd_primer = "ACATCCAACACTCTACGCCC"
+        argsn.fwd_primer = primer
         argsn.bwd_primer = "GTGTGTTGCGGCTCCTATTC"
         argsn.maximum_gc = 0.55
         argsn.minimum_gc = 0.45

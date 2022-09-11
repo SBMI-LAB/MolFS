@@ -135,7 +135,9 @@ class blocks:
     def encode(self):
         if self.block == 0:
             self.mDevice.setAddress(0)
-            
+        
+        self.mDevice.Block = self.block
+        self.mDevice.Pool = self.pool
             
         self.mDevice.encode(self.PoolFolder +self.file + ".bin", self.PoolFolder+self.file + ".dna")
         

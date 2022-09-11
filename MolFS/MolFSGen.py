@@ -56,6 +56,13 @@ class MolFS:
         
         self.GlobalIndex = None
         
+        self.UseZLib = False
+        
+        self.Sessions = []
+        
+    def setUseZlib(self, value):
+        self.UseZLib = value
+        
         
     def StartFS(self, Name = ""):
         # Open or create a new FileSystem with the given name
@@ -72,7 +79,8 @@ class MolFS:
             self.CurrentSession = nSession
             
             
-            
+        self.Sessions.append(self.CurrentSession)
+        
         self.CurrentSession.mDevice = self.mDevice
         
         self.CurrentSession.Create(Name)
@@ -86,7 +94,7 @@ class MolFS:
         self.indexFile = self.CurrentSession.indexFile
         self.Root = self.CurrentSession.Root
         
-        
+        self.indexFile.SessionNumber = self.CurrentSession.number - 2
         self.indexFile.GlobalIndex = self.GlobalIndex
         
         
@@ -128,7 +136,11 @@ class MolFS:
         # self.Root.mDevice = self.mDevice
         # self.indexFile.IndexPool.mDevice = self.mDevice
         
-        
+    def changeSession(self, session):
+        self.CurrentSession = session
+        self.Root = self.CurrentSession.Root
+        self.OutputPath = self.CurrentSession.OutputPath
+    
     def getPaths(self):
 
         self.PoolsPath = self.CurrentSession.PoolsPath
@@ -214,6 +226,8 @@ class MolFS:
 
     def CloseSession(self):
         
+        self.Root.setUseZlib(self.UseZLib)
+        
         self.CheckDifferential()
         
         self.WriteBlocks()        
@@ -272,6 +286,8 @@ class MolFS:
         t = time.time()
         # Create DataBlocks
         self.Root.genBlocks()
+        
+        #self.indexFile.SessionNumber = self.CurrentSession.number
         
         self.indexFile.genIndexFile()
         

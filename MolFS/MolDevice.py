@@ -21,6 +21,11 @@ class MolDevice:
         self.encodeParam = [0]
         
         self.selectDevice()
+        
+        self.Pool = 0
+        
+        self.Block = 0
+        
         #self.readDevice()
         
     
@@ -70,6 +75,8 @@ class MolDevice:
     
     def encode(self, file_in, file_out):
         if self.Active:
+            self.mDevice.Pool = self.Pool
+            self.mDevice.Block = self.Block
             self.mDevice.encode(file_in, file_out)
             self.encodeParam[0] = self.mDevice.encodeParam
         else:

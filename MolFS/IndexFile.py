@@ -26,6 +26,8 @@ class IndexFile:
         
         self.GlobalIndex = None
         
+        self.SessionNumber = 0
+        
         
     
     
@@ -191,6 +193,8 @@ class IndexFile:
         self.IndexPool.addNewFile ( self.FSPath + "index.xml", "/tmp/index.xml")
         
         self.IndexPool.initPool = 0
+        
+        self.IndexPool.lastBlock =  self.SessionNumber
         
         self.IndexPool.genBlocks()
         

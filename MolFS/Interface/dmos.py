@@ -47,6 +47,10 @@ class MolFSDev: ### class dmos
         '''
             Startup of the interface
         '''
+        self.encodeParam = 1
+        self.decodeParam = 1
+        self.Block = 0
+        self.Pool = 0
 
     
     def encode(self, in_file, out_file):

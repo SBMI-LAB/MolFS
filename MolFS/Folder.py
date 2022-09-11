@@ -197,8 +197,13 @@ class folder:
         for k in self.files:
             k.readFile(npath)
             
+        for k in self.patches:
+            k.readFile(npath)
+            
         for k in self.folders:
             k.readAllFiles(npath)
+        
+        
             
     
     def addNewBlocks(self, file):
