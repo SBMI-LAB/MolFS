@@ -34,6 +34,8 @@ class MolFSDev: ### class seqnam
         
         self.Block = 0
         self.Pool = 0
+        
+        self.Redundancy = 1
     
     def encode(self, in_file, out_file):
         '''
@@ -65,7 +67,7 @@ class MolFSDev: ### class seqnam
         argsn.map = "MolFS/Interface/seqNAM/original_map.txt"
         
         
-        argsn.alpha = 1  ## Redundancy
+        argsn.alpha = self.Redundancy  ## Redundancy
         
         argsn.output_format = "sequence_only"        
         argsn.ensure_decode_ability = True
@@ -187,6 +189,8 @@ class MolFSDev: ### class seqnam
                     nsegs = 0
                 nsegs += 1
                 
+                break
+                
             iterations += 1
             
             
@@ -198,7 +202,7 @@ class MolFSDev: ### class seqnam
         
         if valid == False:
             print("Error decoding file ", in_file)
-            raise Exception ("File not decoded")
+            #raise Exception ("File not decoded")
                 
         
     
