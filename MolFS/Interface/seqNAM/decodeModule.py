@@ -130,13 +130,15 @@ def seqNAMdecode(args=None):
                 else:
                     dna = str(row.seq)
                 # Remove the primer
-                dna = dna[args.primer_length: -args.primer_length] if args.primer_length else dna
+                #dna = dna[args.primer_length: -args.primer_length] if args.primer_length else dna
+                dna = dna[args.primer_length: -len(args.bwd_primer)] if args.primer_length else dna
+                #dna = dna[args.primer_length: -20] if args.primer_length else dna
             except KeyError:
                 logger.info("The file Format isn't correct")
                 return -1
 
             if len(dna) == 0:
-                logger.info("Finished reading input file!")
+                logger.info("Finished reading input file! (%d lines)", line)
                 break
 
             line += 1

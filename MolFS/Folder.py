@@ -47,20 +47,40 @@ class folder:
         
         self.InternalPath = ""
         
+        self.useFlags = True
         
+        self.FS = None
+        
+        
+    
+    def setFS(self, FS):
+        self.FS = FS
+        
+        for folder in self.folders:
+            folder.setFS(self.FS)
     
     
     def setUseZlib (self, value):
         self.useZlib = value
         for block in self.blocks:
             block.useZlib = value
-            
+    
+    def setUseFlags (self, value):
+        self.useFlags = value
+        for block in self.blocks:
+            if value == True:
+                block.setFlags()
+            else:
+                block.unsetFlags()
     
     
     def addFile(self, file):
         self.files.append(file)
         self.Index.addFiles(file)
-        
+    
+    def addPatch(self, file, fileID):
+        self.patches.append(file)
+        self.Index.addPatch(file, fileID)    
     
 
     def addPatchFile(self, filename, localpath, fileID):
@@ -179,7 +199,7 @@ class folder:
                 filepath = path +  file.InternalPath
                 patchpath = path + patch.InternalPath 
                 
-                restorePatch(filepath, patchpath)
+                restorePatch(filepath, patchpath, self.mDevice)
         
         
     
@@ -214,14 +234,21 @@ class folder:
         blockNew = True
         
         if len(self.blocks) == 0:
-            block = blocks(self)
+            block = blocks(self.FS)
             block.useZlib = self.useZlib
+            
+            if self.useFlags == False:
+                block.unsetFlags()
+            else:
+                block.setFlags()
+            
+            
             block.pool = self.initPool #1
             block.block = self.lastBlock + 1
         else:
             lblock = self.blocks[-1]
             if lblock.used == blockSize:
-                block = blocks(self)
+                block = blocks(self.FS)
                 block.pool = lblock.pool
                 block.block = lblock.block + 1
             else:
@@ -246,7 +273,7 @@ class folder:
             if block.used == blockSize:
                 block.writeclose()
                 file.add_extents(block, prem)  #the file should report the extent
-                block = blocks(self) #new block
+                block = blocks(self.FS) #new block
                 block.pool = npol
                 block.block = lblock.block + 1
                 blockNew = True
@@ -313,7 +340,7 @@ class folder:
 
 
             
-            block = blocks(self)  # Create a new object
+            block = blocks(self.FS)  # Create a new object
             
             block.pool = pool
             block.block = n

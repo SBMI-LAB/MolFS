@@ -9,7 +9,7 @@ import zlib
 
 from multiprocessing import Process
 
-from MolFS.Binary import *
+from Binary import *
 
 #blockSize = 4096 # bytes
 # blockSize = 65536 # bytes
@@ -21,7 +21,7 @@ fillBlocks = False
 
 useZlib = True
 
-useBlockFlags = True
+useBlockFlags = False
 
 ## alter block size if use BlockFlags
 if useBlockFlags:
@@ -65,6 +65,10 @@ class blocks:
         
         self.blockSize = self.rBlockSize  ## Block size used. Recalculated if used flags
         
+        self.useBlockFlags = True
+        
+        
+        
     
     def setFlags(self):
         self.useBlockFlags = True
@@ -74,6 +78,7 @@ class blocks:
     def unsetFlags(self):
         self.useBlockFlags = False
         self.blockSize = self.rBlockSize
+        print("\n\n Unsetting flags \n\n")
     
     
     def addToBlock(self, cont):
@@ -112,7 +117,7 @@ class blocks:
         ## ZLib
         
         
-        if useBlockFlags:
+        if self.useBlockFlags:
             if self.useZlib:
                 content2 = self.initFlag + contentZ +sizeflag+ self.endFlag + nameflag
             else:
@@ -177,11 +182,23 @@ class blocks:
             #filename = self.FS.PoolsPath+self.file
             filename = self.PoolFolder+self.file
             
+            readfile = filename + ".dna"
+            
+            self.useZlib = self.FS.UseZLib
+            
+            if not os.path.exists(readfile):
+                readfile = self.FS.CurrentSession.CachePath + self.file + ".fastq"
+            
+            
+            
             #if os.path.exists(self.PoolFolder+self.file+".bin"):
-            if os.path.exists(filename+".dna"):
+            if os.path.exists(readfile):
                 #self.content = HexRead(filename)
                 self.mDevice.setDecodeParam(self.encodeParam)
-                self.mDevice.decode(filename+".dna", filename+".dec.bin")
+                self.mDevice.Block = self.block
+                self.mDevice.Pool = self.pool
+#                self.mDevice.decode(filename+".dna", filename+".dec.bin")
+                self.mDevice.decode(readfile, filename+".dec.bin")
                 self.content = binaryRead(filename+".dec.bin")
                 
                 sif = self.content.find(self.initFlag)

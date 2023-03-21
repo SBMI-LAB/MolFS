@@ -17,6 +17,7 @@ from Folder import *
 
 from MolDevice import *
 from Session import *
+from MolFSLoader import *
 
 
 
@@ -44,9 +45,13 @@ class MolFS:
     MolPath = "/tmp/MolFS/"
     
         
-    def __init__(self, devType = "DMOS"):
+    def __init__(self, devType = ""):
         
-        self.mDevice = MolDevice(devType.lower())
+        if devType != "":
+            self.mDevice = MolDevice(devType.lower())
+        
+        
+        
         
         self.InitSession = None
         self.CurrentSession = None
@@ -58,10 +63,24 @@ class MolFS:
         
         self.UseZLib = False
         
+        self.UseFlags = True
+        
         self.Sessions = []
         
+        self.Loader = MolFSLoader()
+        
+        self.ImportedFastQ = 0
+        
+        
+    def restartDevice(self, devType):
+        self.mDevice = MolDevice(devType.lower())
+        
+    
     def setUseZlib(self, value):
         self.UseZLib = value
+        
+    def setUseFlags(self, value):
+        self.UseFlags = value
         
         
     def StartFS(self, Name = ""):
@@ -216,6 +235,7 @@ class MolFS:
         # Open the system
         dprint("Open FS from File")
         dprint("----------")
+#        self.Loader.SaveSystem(self)
         
         
     def OpenPool (self):
@@ -227,12 +247,15 @@ class MolFS:
     def CloseSession(self):
         
         self.Root.setUseZlib(self.UseZLib)
+        self.Root.setUseFlags(self.UseFlags)
         
         self.CheckDifferential()
         
         self.WriteBlocks()        
         self.MoveToPrevious()
         self.CurrentSession.Close()
+        
+        self.Loader.SaveSystem(self)
         
 
     def CheckDifferential(self):
@@ -249,7 +272,7 @@ class MolFS:
                     ### Compare files
                     print("Comparing the two files")
                     patchFile =  self.CurrentSession.Patches + "Patch_F_" + str(file.Id) + "-S" +str(self.CurrentSession.number) + ".patch"
-                    success = genPatch(PFile, CFile, patchFile)
+                    success = genPatch(PFile, CFile, patchFile, self.mDevice)
                     
                     if success:
                         ## Add the patchFile to the system
@@ -285,10 +308,13 @@ class MolFS:
         
         t = time.time()
         # Create DataBlocks
+        
+        self.Root.setFS(self)
+        
         self.Root.genBlocks()
         
         #self.indexFile.SessionNumber = self.CurrentSession.number
-        
+        self.indexFile.FS = self
         self.indexFile.genIndexFile()
         
         toc = time.time()
@@ -447,6 +473,77 @@ class MolFS:
         
         return strands, size
     
+    
+    def ExportSequences(self, csvFile):
+        # Creates a CSV file, with the sequences
+        
+        OutFile = open(csvFile, 'w')
+        
+        for nSession in self.Sessions:
+            # index and pool
+            nPoolsPath = nSession.PoolsPath
+            npools = os.listdir(nPoolsPath)
+            
+            for fpool in npools:
+                dirPath = os.path.join(nPoolsPath, fpool)
+                nblocks = os.listdir(dirPath)
+                
+                for nblock in nblocks:
+                    if nblock.endswith(".dna"):
+                        blockName = nblock[:-4]
+                        nblock = os.path.join( dirPath, nblock )
+                        SeqLists = self.mDevice.exportSequences(nblock)
+                        
+                        for seq in SeqLists:
+                            OutFile.write(blockName + "," + seq )
+                            if "\n" not in seq:
+                                OutFile.write("\n")
+
+                        
+                
+                
+                
+            
+            
+            
+        
+        OutFile.close()
+        
+    
+    def LoadSystem(self, name):
+        self.Name = name
+        self.Loader.LoadSystem(self)
+        
+        
+    def PreProcessFastQ(self, fastqfolder):
+        
+        Tmpfolder = os.path.join(self.CurrentSession.FastQCache, "FastQ_"+str(self.ImportedFastQ))
+        try:
+            os.mkdir(Tmpfolder)
+        except:
+            None
+            
+        self.ImportedFastQ += 1
+        process = self.mDevice.PreProcessFastQ(fastqfolder, Tmpfolder)
+        return process
+    
+    def ProcessFastQ(self):
+        
+        self.mDevice.importSequences(self.CurrentSession.FastQCache, self.CurrentSession.CachePath)
+        
+        # Next step: try to identify the sessions
+#        for Session in self.Sessions:
+        Session = self.CurrentSession
+        
+        if Session.FS == None:
+            Session.FS = self
+        Session.CheckSession()
+        
+        self.Sessions.pop(-1)
+        self.CurrentSession = self.Sessions[-1]
+        
+        self.Loader.SaveSystem(self)
+        
     
     def Stats(self):
         

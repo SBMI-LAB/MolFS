@@ -23,6 +23,8 @@ class extent:
         self.blocks = []
         
         self.numblocks = 0
+        
+        self.FS = None
     
     def addBlocks(self, block):
         self.blocks.append(block)
@@ -65,5 +67,57 @@ class extent:
             
         
         return content
+    
+    
+    def searchBlocks(self, Root, pool, block):
+        
+        passed = False
+
+        for nblock in Root.blocks:
+            if nblock.pool == pool and nblock.block == block:
+                passed = True
+                return nblock
+        
+        if passed == False:
+            nblock = blocks(self.FS)
+            nblock.pool = pool
+            nblock.block = block
+            
+            Root.blocks.append(nblock)
+            return nblock
+            
+                
+                
+    
+    
+    def reloadBlocks(self, Root):
+        # Recreates the block structure and points to the target file
+        # It is not THAT simple!
+        print("Reloading blocks")
+        tsize = blockSize
+        
+        
+        self.block_out = self.block_in + self.numblocks
+        print("Pool", self.pool, "Block", self.block_in)
+        # print("Range of blocks:", self.block_in, self.block_out)
+        
+        
+        for k in range(self.block_in,self.block_out):
+            
+            nblock = self.searchBlocks(Root, self.pool, k)
+            
+            self.blocks.append(nblock)
+            print("Adding block ", self.pool, k)
+            
+            
+            
+            
+        
+        
+            
+            
+            
+        
+        
         
        

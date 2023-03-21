@@ -104,7 +104,7 @@ class DMOSDec:
         
             # first perform the decoding
         process = subprocess.Popen("python3 " + ldpc_decode_path + ' --pchk-file ' + pchk_file + ' --received-file ' + received +
-                       '  --output-file ' + decoded + "  --channel bsc --channel-parameters 0.0001 --max-iterations 20000", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                       '  --output-file ' + decoded + "  --channel bsc --channel-parameters 0.001 --max-iterations 500", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         results = process.stderr.readlines()
         nr = results[0].decode()
@@ -209,6 +209,45 @@ class DMOSDec:
                         
                     except:
                         None
+                
+                
+        
+        self.binaryStrings.append(binText)        
+        
+        dec = self.decodeLDPC(designs)
+        
+        self.binaryBlock = bytearray()
+        
+        for s in dec:        
+            self.binaryBlock += int(s, 2).to_bytes(len(s) // 8, byteorder='big')
+        
+        
+        file2 = open(self.outputFile,'wb')
+        file2.write(self.binaryBlock)
+        file2.close()
+        
+    def decRawListLDPC(self, Kn, designs):
+        self.binaryStrings.clear()
+        self.addressList.clear()
+        self.domainValues.clear()
+        
+        binText = ""
+    
+#        Kn = list(reader)
+        
+        for rows in Kn:
+            nr = []
+            for cols in rows:
+                try:
+                    nbit = float(cols)
+                    
+                    if nbit > 0:
+                        binText += "1"
+                    else:
+                        binText += "0"
+                    
+                except:
+                    None
                 
                 
         

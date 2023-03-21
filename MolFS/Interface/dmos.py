@@ -15,6 +15,12 @@ from DMOS.DMOS_decode import DMOSDec
 
 class MolFSDev: ### class dmos
     
+    UseFastQ = True
+    
+    DoubleStep = True
+    ## It will require the DMOS decoder prior to 
+    ## the binary conversion
+    
     Address = 0
     
     StrandAddress = 0
@@ -28,9 +34,9 @@ class MolFSDev: ### class dmos
 
 
     
-    encoder = "LDPC_512_PR"
-    msgSize = 48*8  ##  384
-    codeSize = 512
+    #encoder = "LDPC_512_PR"
+    #msgSize = 48*8  ##  384
+    #codeSize = 512
 
     encoder = "LDPC_768_PR"
     msgSize = 72*8  ##  576

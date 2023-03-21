@@ -8,7 +8,7 @@ import zlib
 
 from multiprocessing import Process
 
-from MolFS.Binary import *
+from Binary import *
 
 #blockSize = 4096 # bytes
 # blockSize = 65536 # bytes

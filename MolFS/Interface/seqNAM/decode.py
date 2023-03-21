@@ -136,7 +136,7 @@ def main(args=None):
                 return -1
 
             if len(dna) == 0:
-                logger.info("Finished reading input file!")
+                logger.info("Finished reading input file! (%d lines)", line)
                 break
 
             line += 1

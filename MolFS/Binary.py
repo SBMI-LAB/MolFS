@@ -4,6 +4,7 @@
 import subprocess
 import os
 import shutil
+import gzip
 
 def binaryRead(filename):
     ## Read a whole binary file in memory and
@@ -77,7 +78,20 @@ def dprint(text):
 
 ### DiffScript
 
-def genPatch (Original, Modified, Patch):
+def genPatch (Original, Modified, Patch, Device):
+    
+    if Device.devtype == "dmos":
+        ### Copy to tmp folder and process there
+        OrigFile = "/tmp/OrigFile"
+        ModFile  = "/tmp/ModFile"
+        TextToMyers(Original, OrigFile )
+        TextToMyers(Modified, ModFile)
+      
+        Original = OrigFile
+        Modified = ModFile  ## Replace names of the variables
+        
+        
+        
 
     subprocess.run("diff --minimal " + Original + "  " + Modified +  " > " + Patch, shell = True )
     
@@ -91,16 +105,27 @@ def genPatch (Original, Modified, Patch):
     
 
 
-def restorePatch (Original, Patch):
+def restorePatch (Original, Patch, Device):
     # Original = os.path.join("Original", filename)
     # Patch = os.path.join("Patches", filename2+".patch")
     # Restored = os.path.join("Reconstructed", filename2)
+    
+    if Device.devtype == "dmos":
+        ### Copy to tmp folder and process there
+        OrigFile = "/tmp/OrigFile"
+        TextToMyers(Original, OrigFile )
+        Original2 = Original # backup filename
+        Original = OrigFile
+    
     
     Restored = "/tmp/RestoredPatch"
     
     subprocess.run("patch " + Original + " -i " + Patch +  " -o " + Restored , shell = True)
     
     shutil.copyfile(Restored, Original)
+    
+    if Device.devtype == "dmos":
+        MyersToText(Original, Original2)
     
     
 
@@ -110,4 +135,99 @@ def restorePatch2 (filename, filename2, outputfile):
     Restored = outputfile
     
     subprocess.run("patch " + Original + " -i " + Patch +  " -o " + Restored , shell = True)
+    
+    
+def TextToMyers(filename, outputfile):
+    ### Transforms spaces of text file to Enters
+    ## To reduce cost of Myers algorithm
+    file = open(filename,'r')
+    output = open(outputfile,'w')
+    
+    lines = file.readlines()
+    
+    n = len(lines)
+    k = 0
+    
+    ## Each line has an enter
+    ## Lets re encode in term of lines
+    for line in lines:
+        k2=line.split(" ")
+        for nk in k2:
+            output.write(nk+"\n")
+        
+        k = k+1
+        if k<n:
+            output.write(chr(143))   ## This is a real enter   
+    
+    
+    file.close()
+    output.close()
+    
+
+def MyersToText(filename, outputfile):
+    ### Transforms modified file after restoring to 
+    ## The original formatting
+    file = open(filename,'r')
+    output = open(outputfile,'w')
+    
+    lines=file.readlines()
+    
+    for line in lines:
+        
+        nline = line.split(chr(143))
+        n = len(nline)
+        k=0
+        
+        
+        
+        for kline in nline:
+            
+            k=k+1
+            if k<n:
+                output.write(kline[:-1]+"\n")
+            else:
+                output.write(kline[:-1]+" ")
+        
+    output.close()
+    file.close()
+    
+    
+def fastqread(file):
+    
+    fqfile = open(file,'r')
+    lines = fqfile.readlines()
+    fqfile.close()
+    pos = 1
+    
+    seqs = []
+    for line in lines:
+        if pos == 2:
+            seqs.append(line)
+        pos = pos + 1
+        
+        if pos == 5:
+            pos = 1
+    
+    return seqs
+
+def fastqgzread(file):
+    
+    fqfile = gzip.open(file, 'r')
+    lines = fqfile.readlines()
+    fqfile.close()
+    pos = 1
+    
+    seqs = []
+    for line in lines:
+        
+        if pos == 2:
+            line = line.decode('utf-8')
+            seqs.append(line)
+        pos = pos + 1
+        
+        if pos == 5:
+            pos = 1
+    
+    return seqs
+    
 
