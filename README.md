@@ -4,9 +4,6 @@ The Molecular File System is inspired by electronic file system schemes such as 
 
 The architecture of the MolFS provides Management modules for Session, Indexing and the Molecular device interface, and defines controllers for logical defined objects such as Folders, Files, Extents and Blocks.
 
-**Table of Contents**
-
-[TOCM]
 
 ### Requirements
 
@@ -52,6 +49,29 @@ To use a custom DNA storage scheme (we call here Molecular Device), it requires 
 - Must have functions to transform a binary file to DNA sequences and viceversa
 - It is recommended to incorporate a barcode that encodes the Block and Pool numbers.
 - Must have a function to classify single DNA strands to determine the corresponding Block and Pool
+
+
+#### Dummy example
+
+The dummy example uses a basic DNA encoding algorithm (dummy) that just transforms binary to DNA and viceversa. 
+Its interface is located at MolFS/Interface/dummy.py
+
+Using the dummy as starting point, you can adapt your own DNA encoding scheme and use it with MolFS.
+
+
+Two examples are provided:
+
+TestDummy.py
+
+This example allows to verify the Interface, and directly call it from the MolFS to encode and decode a simple file without using MolFS features.
+
+TestDummy2.py
+
+This example allows to create two folders, two files, and modify them through 5 sessions. 
+The example folder has the files that will be used as reference as the modified ones in the consecutive sessions.
+
+You can verify the outputs in the folder /tmp/MolFS
+
 
 The dummy example is under construction. 
 Contact me: jeguerrero@aggies.ncat.edu for further information and/or example using an existing Molecular Device interface.
