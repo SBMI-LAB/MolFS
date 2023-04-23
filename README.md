@@ -23,7 +23,7 @@ fs = MolFS("dummy")
 
 fs.StartFS("LabelName")
 
-fs. mkdir("FolderName1") 	# Create folder
+fs.mkdir("FolderName1") 	# Create folder
 fs.cd("FolderName1")			# Change folder file
 fs.add(  AbsolutePathFile  )	# Add a file
 
