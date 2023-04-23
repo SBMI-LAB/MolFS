@@ -14,7 +14,7 @@ This implementation requires Python 3.7 or newer, and PyQt5 for the Graphical Us
 To use the Molecular File System with a custom DNA storage scheme, it requires to have one interface (see guideline for creating a Molecular Device interface)
 
 
-###Using the MolFS
+### Using the MolFS
 
 
 ```Python
@@ -40,11 +40,11 @@ fs.setUseZlib(True)		# Compresses the data blocks
 fs. CloseSession()		# Generate the data blocks using the Molecular Device
 ```
 
-###Graphical User Interface (Under development)
+### Graphical User Interface (Under development)
 
 The Graphical User Interface runs using PyQt5, and shows a file manager window similar to Windows Explorer. This version is under development and is not yet functional.
 
-###Molecular Device Interface
+### Molecular Device Interface
 
 To use a custom DNA storage scheme (we call here Molecular Device), it requires a Python script located in the folder MolFS/Interface, with the following conditions:
 
