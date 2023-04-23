@@ -13,6 +13,9 @@ from MolFS.MolFSGen import *
 samplePath= "ExampleFiles/"
 
 fs = MolFS("dummy")
+# Replace dummy with your molecular device interface
+
+
 fs.StartFS("CompleteDummy")  # Create FS and new session
 
 fs.mkdir("Figures")
