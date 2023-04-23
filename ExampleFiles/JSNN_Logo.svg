@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="101.86458mm"
+   height="20.82012mm"
+   viewBox="0 0 101.86458 20.82012"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="JSNN_Logo.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.5933373"
+     inkscape:cx="178.49881"
+     inkscape:cy="26.205074"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="995"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-194.95567,-215.49628)">
+    <polygon
+       class="st0"
+       points="335.55,29.61 385,29.61 385,30.54 335.55,30.54 "
+       id="polygon107"
+       style="display:inline;fill:#12284c"
+       transform="matrix(0.26458333,0,0,0.26458333,194.95567,215.49628)" />
+    <polygon
+       class="st0"
+       points="90.12,29.61 146.46,29.61 146.46,30.54 90.12,30.54 "
+       id="polygon109"
+       style="display:inline;fill:#12284c"
+       transform="matrix(0.26458333,0,0,0.26458333,194.95567,215.49628)" />
+    <polygon
+       class="st0"
+       points="0,29.61 51.88,29.61 51.88,30.54 0,30.54 "
+       id="polygon111"
+       style="display:inline;fill:#12284c"
+       transform="matrix(0.26458333,0,0,0.26458333,194.95567,215.49628)" />
+    <polygon
+       class="st0"
+       points="159.79,29.61 301.12,29.61 301.12,30.54 159.79,30.54 "
+       id="polygon113"
+       style="display:inline;fill:#12284c"
+       transform="matrix(0.26458333,0,0,0.26458333,194.95567,215.49628)" />
+  </g>
+</svg>
