@@ -43,7 +43,7 @@ fs.CreateSession()
 fs.mkdir("Text")
 fs.cd("Text")
 
-fs.add(samplePath2 + "Title.txt")
+fs.add(samplePath + "Title.txt")
 fs.cd("..")
 
 

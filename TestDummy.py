@@ -11,7 +11,7 @@ fs = MolFS("dummy")
 fs.StartFS("dummyTest")
 
 
-fs.mDevice.encode("/tmp/TestFile.txt", "/tmp/TestFile.dna")
+fs.mDevice.encode("ExampleFiles/Title.txt", "/tmp/TestFile.dna")
 
 
 fs.mDevice.decode("/tmp/TestFile.dna", "/tmp/TestFileDec.txt")
