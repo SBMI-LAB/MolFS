@@ -93,7 +93,7 @@ def genPatch (Original, Modified, Patch, Device):
         
         
 
-    subprocess.run("diff --minimal " + Original + "  " + Modified +  " > " + Patch, shell = True )
+    subprocess.run("diff -a --minimal " + Original + "  " + Modified +  " > " + Patch, shell = True )
     
     ### Check the file
     size = os.stat(Patch).st_size

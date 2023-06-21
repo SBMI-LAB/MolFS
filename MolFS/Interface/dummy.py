@@ -105,9 +105,20 @@ class MolFSDev: ### class for the molecular device
         
         be.decode(in_file, out_file)
         
+        ## Write valid verification code
+        
 #        if (Encoding_Valid):
 #            self.ValidDecode = True
+        self.ValidDecode = True
+        
+        # If not valid, must return False
+        return True
     
+    
+    def FilterSequence(self, sequence):
+        ### Filters the sequence for the expected primers
+        
+        return sequence
     
     def ClassifySequence(self, sequence):
         '''
@@ -204,3 +215,14 @@ class MolFSDev: ### class for the molecular device
         lastP = termn
         
         return firstP, lastP
+    
+    
+    def exportSequences(self, in_file):
+        # Reads a block file
+        # and returns the plain list of sequences
+        
+        seqFile = open(in_file,'r')
+        Lists = seqFile.readlines()
+#        Lists = Lists[1:]
+        
+        return Lists

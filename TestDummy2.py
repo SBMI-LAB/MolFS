@@ -66,6 +66,6 @@ shutil.copyfile(samplePath+"JSNN_Logo_V5.svg", fs.CurrentSession.Current + "/Fig
 shutil.copyfile(samplePath+"Title_S3.txt", fs.CurrentSession.Current + "/Text/Title.txt" )
 fs.CloseSession()
 
-#
-##fs.readAll()
-#fs.ExportSequences("/tmp/Sequences.txt")  # To implement
+#fs.readAll()
+fs.ExportSequences("/tmp/Sequences.txt")  
+fs.ExportFastQ("/tmp/Sequences.fastq")  

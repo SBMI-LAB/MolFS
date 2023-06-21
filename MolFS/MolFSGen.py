@@ -499,16 +499,42 @@ class MolFS:
                             if "\n" not in seq:
                                 OutFile.write("\n")
 
-                        
-                
-                
-                
-            
-            
-            
-        
+
         OutFile.close()
+
+
+    
+    def ExportFastQ(self, fastqFile):
+        # Creates a FastQ file, with the sequences
         
+        OutFile = open(fastqFile, 'w')
+        
+        for nSession in self.Sessions:
+            # index and pool
+            nPoolsPath = nSession.PoolsPath
+            npools = os.listdir(nPoolsPath)
+            
+            for fpool in npools:
+                dirPath = os.path.join(nPoolsPath, fpool)
+                nblocks = os.listdir(dirPath)
+                
+                for nblock in nblocks:
+                    if nblock.endswith(".dna"):
+                        blockName = nblock[:-4]
+                        nblock = os.path.join( dirPath, nblock )
+                        SeqLists = self.mDevice.exportSequences(nblock)
+                        
+                        for seq in SeqLists:
+                            OutFile.write("@\n")
+                            OutFile.write( seq )
+                            if "\n" not in seq:
+                                OutFile.write("\n")
+                            OutFile.write("+\n")
+                            OutFile.write("$\n")
+                            
+
+
+        OutFile.close()        
     
     def LoadSystem(self, name):
         self.Name = name
@@ -526,6 +552,30 @@ class MolFS:
         self.ImportedFastQ += 1
         process = self.mDevice.PreProcessFastQ(fastqfolder, Tmpfolder)
         return process
+    
+    def ImportFastQ(self, fastqfolder):
+        
+        Tmpfolder = os.path.join(self.CurrentSession.FastQCache, "FastQ_"+str(self.ImportedFastQ))
+        try:
+            os.mkdir(Tmpfolder)
+        except:
+            None
+        
+        
+        nfiles = os.listdir(fastqfolder)
+        
+        nk = 0
+        
+        for file in nfiles:
+            fpath = os.path.join(fastqfolder, file)
+            
+            if ".fastq" in fpath :
+                CFile = os.path.join(Tmpfolder, "Imported_"+str(nk)+".fastq")
+                shutil.copy(fpath, Tmpfolder)
+                
+        
+        self.ImportedFastQ += 1
+        
     
     def ProcessFastQ(self):
         

@@ -136,7 +136,9 @@ class MolDevice:
 #        cFile = open(cachefile,'a')
         if cacheName not in self.CacheNames:
             cFile = open(cachefile,'w')
-            cFile.write("sequence\n")
+            if self.devtype == "seqnam":
+                cFile.write("sequence\n")
+                
             self.CacheNames.append(cacheName)
             self.CacheFileList.append(cFile)
         else:
@@ -153,8 +155,11 @@ class MolDevice:
         
         if cPool >= 0 and cBlock >= 0:
             cFile = self.getCacheFile(cPool, cBlock)
-            if len(oseq) > 200:
-                cFile.write(oseq+"\n")
+            if len(oseq) > 50:
+                if "\n" not in oseq:
+                    cFile.write(oseq+"\n")
+                else:
+                    cFile.write(oseq)
 #            cFile.close()
         else:
             self.skipSequences += 1
