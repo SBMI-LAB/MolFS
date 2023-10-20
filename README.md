@@ -73,7 +73,24 @@ The example folder has the files that will be used as reference as the modified 
 You can verify the outputs in the folder /tmp/MolFS
 
 
-The dummy example is under construction. 
+#### Experimental example
+
+The experimental demonstration of the Molecular File System was performed using the SeqNAM encoding scheme (https://github.com/gmortuza/seqNAM/)
+The file 
+Test_Experiment_Seqnam.py
+
+provides the steps to read the FastQ files (download first the files from the repository https://trace.ncbi.nlm.nih.gov/Traces/?run=SRR26445816 )
+
+The script filters the sequences via sequence alignment, written in C++ (Requires a Linux environment to run the aligner), and then decodes the contents.
+The output can be observed in the folder /tmp/MolFS/TestRead and verify the folder Previous
+
+The file 
+Test_Experiment_Seqnam_Filtered.py
+
+Allows to reconstruct the file system structure, using a previously filtered FastQ file (provided in this repository).
+The output can be observed in the folder /tmp/MolFS/TestRead and verify the folder Previous
+
+ 
 Contact me: jeguerrero@aggies.ncat.edu for further information and/or example using an existing Molecular Device interface.
 
 
