@@ -481,17 +481,15 @@ class MolFSDev: ### class seqnam
         # it will return the same folder
         # MolFS suggests a workpath, but it is not 
         # mandatory
-        
-        
         # SeqNAM uses a SeqNAMFilter to
         # preprocess the sequences
-        
-        
-        
+
         FastQFolder = fastqfolder
         WorkPath = workpath
         
-        AppPath = "/home/acroper/Documents/NCAT/Research/DMOS/SeqNAMFilter/build-SeqNAMFilter-Desktop-Debug/"
+        #AppPath = "/home/acroper/Documents/NCAT/Research/DMOS/SeqNAMFilter/build-SeqNAMFilter-Desktop-Debug/"
+        AppPath =  os.path.dirname(os.path.realpath(__file__)) + "/SeqNAMFilter/build-SeqNAMFilter-Desktop-Debug/"
+        
         
         cmd = os.path.join(AppPath , "SeqNAMFilter" )
         cmd += " -f " + FastQFolder 

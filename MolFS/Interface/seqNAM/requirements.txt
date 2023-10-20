@@ -1,0 +1,4 @@
+numpy~=1.18.5
+tqdm~=4.51.0
+Cython~=0.29.2
+biopython~=1.78
