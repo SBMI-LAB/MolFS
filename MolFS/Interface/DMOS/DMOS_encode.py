@@ -33,7 +33,7 @@ class DMOSEnc:
         self.getTemplateIDs()
 
     def getTemplateIDs(self):
-        workbook = xlrd.open_workbook( os.path.dirname(os.path.abspath(__file__)) + "/Library/NewTemplates.xlsx")
+        workbook = xlrd.open_workbook( os.path.dirname(os.path.abspath(__file__)) + "/Library/NewTemplates.xls")
 
         sh = workbook.sheet_by_name("Templates")
         for rownum in range(1,sh.nrows):

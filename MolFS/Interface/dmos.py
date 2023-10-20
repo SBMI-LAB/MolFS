@@ -130,6 +130,14 @@ class MolFSDev: ### class dmos
         '''
         None
     
+    def exportSequences(self, in_file):
+        
+        
+        Lists = ''
+
+        
+        return Lists
+    
     
 #seq = seqnam()
 #seq.encode("tests/testfile.jpg","tests/testfile.dna")
