@@ -18,7 +18,7 @@ samplePath = "/tmp/SeqNAMReads/"
 
 
 fs = MolFS("seqnam")
-fs.StartFS("TestRead")
+fs.StartFS("TestLoad")
 fs.setUseZlib(True)
 fs.mDevice.RecursiveImport = True
 
